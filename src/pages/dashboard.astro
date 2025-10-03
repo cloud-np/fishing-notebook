@@ -1,0 +1,19 @@
+---
+import { auth } from "@auth";
+export const prerender = false; // Not needed in 'server' mode
+
+const session = await auth.api.getSession({
+	headers: Astro.request.headers,
+});
+
+if (!session) {
+	return Astro.redirect("/");
+}
+---
+
+<script>
+	const { authClient } = await import("../client-libs/auth");
+	const ep = await authClient.getSession();
+	console.log("!! ", ep);
+</script>
+<h1>You made it {session?.user.name} !</h1>

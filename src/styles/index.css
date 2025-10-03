@@ -1,0 +1,27 @@
+.mid-nav-item {
+	border-bottom: 1px solid var(--c-bg_dark_2);
+}
+
+.mid-nav-item-text > h4 {
+	font-size: clamp(1.5rem, 3dvw, 2.5rem);
+}
+
+.mid-nav-title {
+	font-size: clamp(2rem, 3dvw, 3.5rem);
+}
+
+.mid-nav-item-subtext {
+	color: var(--c-extra_light);
+}
+
+.video-container {
+	height: clamp(5rem, calc(30dvw), 30rem);
+}
+
+@media (max-width: 380px) {
+	.mid-nav-item-text {
+		display: flex;
+		flex-direction: column;
+		align-items: start;
+	}
+}

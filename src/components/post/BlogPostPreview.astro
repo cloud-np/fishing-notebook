@@ -1,0 +1,123 @@
+---
+import { type Post } from '../../libs/post';
+import { Helpers } from '../../utils/helpers';
+import { Image } from 'astro:assets';
+
+export interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<div class="post-preview__container">
+	<a class="post-preview__link fade-in" href={post.href}>
+		<article class="post-preview__article">
+			{
+				!!post.data.previewImage && (
+					<Image
+						src={post.data.previewImage}
+						alt={`Featured for ${post.data.title}`}
+						class="post-preview__img"
+						width={250}
+						height={250}
+					/>
+				)
+			}
+			<div class="post-preview__text">
+				<p class="post-preview__category clickable">
+					{post.data.category}
+				</p>
+				<h2 class="clickable">{post.data.title}</h2>
+				<p class="post-preview__date">
+					{Helpers.formatDate(post.data.publishedAt)}
+				</p>
+			</div>
+		</article>
+	</a>
+</div>
+
+<style>
+	.post-preview__link {
+		text-decoration: none;
+	}
+
+	.post-preview__link:hover .post-preview__text {
+		transform: scale(1.02);
+	}
+
+	.post-preview__article {
+		display: flex;
+		align-items: center;
+	}
+
+	.post-preview__text {
+		margin-left: 4rem;
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.post-preview__category {
+		width: fit-content;
+		padding: 0.25rem 0.75rem;
+		background-color: var(--surface-1);
+		border-radius: 2rem;
+		margin-bottom: 0.5rem;
+		font-size: var(--step--2);
+	}
+
+	.post-preview__text h2 {
+		font-size: var(--step-1);
+	}
+
+	.post-preview__img {
+		width: 250px;
+		height: 160px;
+		object-fit: contain;
+		border-radius: 1rem;
+		transition:
+			box-shadow 0.2s ease-in-out,
+			transform 0.2s ease-in-out;
+	}
+
+	.post-preview__date {
+		margin-top: 0.5rem;
+		font-size: var(--step--1);
+		color: #666;
+	}
+
+	.post-preview__container {
+		max-width: 100%;
+		padding: 1rem 2rem;
+		background-color: var(--background-card);
+		border: 1px solid var(--on-border-color);
+		border-radius: 10px;
+	}
+
+	@media (max-width: 768px) {
+		.post-preview__article {
+			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		.post-preview__img {
+			aspect-ratio: 16/9;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		.post-preview__text {
+			margin-top: 1rem;
+			margin-left: 0;
+		}
+
+		.post-preview__link:hover .post-preview__img {
+			box-shadow: none;
+			transform: none;
+		}
+
+		.post-preview__link:hover .post-preview__text {
+			transform: none;
+		}
+	}
+</style>

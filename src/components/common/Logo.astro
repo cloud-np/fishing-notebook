@@ -1,0 +1,14 @@
+---
+import { Image } from 'astro:assets';
+
+import logo from "@assets/logo-vertical-white.webp";
+
+interface Props {
+	width?: number;
+	priority?: boolean;
+}
+
+const { width = 200, priority = false } = Astro.props;
+---
+
+<Image width={width} priority={priority} src={logo} alt="logo" />

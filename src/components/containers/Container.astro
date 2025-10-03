@@ -1,0 +1,29 @@
+---
+
+interface Props {
+	className?: string;
+}
+
+const { className = "" } = Astro.props as Props;
+---
+
+<style>
+	.container {
+		--lg-container: 1296px;
+		width: 100%;
+		margin: 0 auto;
+		max-width: var(--lg-container, 960px);
+		padding: 0 var(--step-3);
+	}
+
+	@media (max-width: 768px) {
+		.container {
+			display: flex;
+			flex-direction: column;
+		}
+	}
+</style>
+
+<div class=`container ${className}`>
+	<slot />
+</div>

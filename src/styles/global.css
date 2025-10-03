@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import './common.css';
+
+/* inter-regular - greek_latin */
+@font-face {
+	font-display: swap;
+	/* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 400;
+	src: url('/fonts/inter-v19-greek_latin-regular.woff2') format('woff2');
+}
+
+/* inter-700 - greek_latin */
+@font-face {
+	font-display: swap;
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/inter-v19-greek_latin-700.woff2') format('woff2');
+}
+
+/* syne-regular - greek_latin */
+@font-face {
+	font-display: swap;
+	font-family: 'Syne';
+	font-style: normal;
+	font-weight: 400;
+	src: url('/fonts/syne-v23-greek_latin-regular.woff2') format('woff2');
+}
+
+/* syne-700 - greek_latin */
+@font-face {
+	font-display: swap;
+	font-family: 'Syne';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/syne-v23-greek_latin-700.woff2') format('woff2');
+}
+
+/* End of Selection */
+/******************************/
+
+:root {
+	--f-fallback: ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--f-sans: 'Inter', var(--f-fallback);
+	--f-mono: 'Syne', var(--f-fallback);
+
+	/* Typography */
+	/* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1140,24,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l */
+	--step--2: clamp(0.78rem, calc(0.71rem + 0.35vw), 0.96rem);
+	--step--1: clamp(0.94rem, calc(0.84rem + 0.51vw), 1.20rem);
+	--step-0: clamp(1.13rem, calc(0.98rem + 0.73vw), 1.50rem);
+	--step-1: clamp(1.35rem, calc(1.15rem + 1.02vw), 1.88rem);
+	--step-2: clamp(1.62rem, calc(1.34rem + 1.41vw), 2.34rem);
+	--step-3: clamp(1.94rem, calc(1.56rem + 1.92vw), 2.93rem);
+	--step-4: clamp(2.33rem, calc(1.81rem + 2.59vw), 3.66rem);
+	--step-5: clamp(2.80rem, calc(2.11rem + 3.47vw), 4.58rem);
+
+	--body-max-width: 1920px;
+
+	/* Transitions */
+	/* --ease-out-soft: cubic-bezier(0.28, 0, 0.49, 1); */
+	--ease-out-quad: cubic-bezier(0.4, 0.84, 0.44, 1);
+
+	/* Z-index */
+	--z-above: 11;
+	--z-cursor: 12;
+	--z-overlay: 13;
+	/* Mask tricks */
+	/* mask-image: radial-gradient(50% 50% at 50% 50%,#fff 60.94%,transparent 100%); */
+	/* mask-size: cover; */
+
+	--c-bg: #E7E7E7;
+	--c-bg_dark: #1f1f1f;
+	--c-bg_dark_2: #363636;
+	--c-text: #6A6E71;
+	--c-text_light: #e9e9e9;
+	--c-bg_light: #E7E7E7;
+}
+
+/* :where(html) {
+	To compesate for the fixed header when clicking a navigatable anchor
+	scroll-padding-top: calc(var(--header-height) + 10px);
+	scroll-behavior: smooth;
+} */
+
+/* Typography */
+
+.f-mono {
+	font-family: var(--f-mono);
+}
+
+.f-sans {
+	font-family: var(--f-sans);
+}
+
+/* This is a hack to remove the autofill color from the input fields */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	-webkit-background-clip: text;
+	background-color: transparent;
+	transition: background-color 5000s ease-in-out 0s;
+}
+
+
+/*******************************/
+/* TODO: These should be moved elsewhere */
+
+/* Allows for blog post to have a good spacing */
+.flow>*+* {
+	margin-top: 1em;
+}
+
+
+/*******************************/
+
+/* Global classes */
+
+.clickable {
+	transition:
+		color .2s ease-in,
+		text-shadow .2s ease-in;
+}
+
+.clickable:hover {
+	color: var(--c-text_light_hover);
+	text-shadow:
+		0 0 8px rgba(238, 238, 238, 0.171),
+		6px 6px 16px rgba(219, 219, 219, 0.103);
+}
+
+/* Global fade in animation */
+
+@keyframes fadeInAnim {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOutAnim {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+	.fade-in[data-state=visible] {
+		transition: transform 700ms cubic-bezier(0.42, 0, 0.32, 1.17), opacity 1000ms cubic-bezier(0.42, 0, 0.32, 1.17) 200ms;
+	}
+
+	.fade-in[data-state=hidden] {
+		transform: translateY(2ex);
+		opacity: 0;
+	}
+}

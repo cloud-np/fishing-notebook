@@ -1,0 +1,25 @@
+{
+  "framework": "astro",
+  "astro-project": "astro",
+  "src/**": {
+    "framework": "astro"
+  },
+  "src/components/**/*.svelte": {
+    "framework": "svelte"
+  },
+  "src/pages/**/*.astro": {
+    "framework": "astro"
+  },
+  "src/layouts/**/*.astro": {
+    "framework": "astro"
+  },
+  "*.svelte": {
+    "framework": "svelte"
+  },
+  "*.astro": {
+    "framework": "astro"
+  },
+  "public/**": {
+    "framework": null
+  }
+}

@@ -1,0 +1,32 @@
+---
+import { getLangFromUrl, useTranslations } from "@i18n/utils";
+import { settings } from "@i18n/settings.const";
+
+interface Props {
+	className?: string;
+}
+
+const { className = '' } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div class={`flex items-start justify-center mb-12 md:flex-col gap-4 ${className}`}>
+	<span class="text-sm">
+		{t('settings.business.contact.address.street')}
+		<br />
+		— {settings.business.contact.address.postalCode} {t('settings.business.contact.address.city')}
+	</span>
+	<div class="flex flex-col items-start justify-center">
+		<span class="tel f-mono font-bold clickable">
+			<a href={`tel:${settings.business.contact.phone}`}>
+				{settings.business.contact.phone.replace('+30 ', '')}
+			</a>
+		</span>
+		<span class="email text-sm f-sans clickable underline-hover-effect">
+			<a href={`mailto:${settings.business.contact.email}`}>
+				{settings.business.contact.email}
+			</a>
+		</span>
+	</div>
+</div>

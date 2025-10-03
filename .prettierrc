@@ -1,0 +1,36 @@
+{
+	"useTabs": true,
+	"tabWidth": 4,
+	"semi": true,
+	"singleQuote": false,
+	"trailingComma": "es5",
+	"printWidth": 120,
+	"bracketSpacing": true,
+	"bracketSameLine": true,
+	"htmlWhitespaceSensitivity": "ignore",
+	"arrowParens": "avoid",
+	"endOfLine": "lf",
+	"plugins": [
+		"prettier-plugin-astro",
+		"prettier-plugin-tailwindcss"
+	],
+	"overrides": [
+		{
+			"files": [
+				"package.json",
+				"package-lock.json",
+				"pnpm-lock.yaml"
+			],
+			"options": {
+				"useTabs": false,
+				"tabWidth": 4
+			}
+		},
+		{
+			"files": "*.astro",
+			"options": {
+				"parser": "astro"
+			}
+		}
+	]
+}

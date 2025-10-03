@@ -1,0 +1,334 @@
+---
+import { Icon } from "astro-icon/components";
+
+export const prerender = false;
+
+// Set Cache-Control headers for server island caching
+Astro.response.headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
+
+const inputClass = "block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer";
+---
+
+<div class="max-w-2xl p-4 sm:p-8 bg-gray-50 rounded-lg text-gray-500">
+	<form id="contact-form" method="POST">
+		<div class="grid md:grid-cols-2 md:gap-6">
+			<div class="relative z-0 w-full mb-5 group">
+				<input
+					type="text"
+					name="name"
+					id="floating_name"
+					class={inputClass}
+					placeholder=" "
+					autocomplete="name"
+					required
+				/>
+				<label for="floating_name" class="peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+					<span class="flex items-center gap-2">
+						<Icon name="user-linear" class="w-4 h-4" />Όνομα
+					</span>
+				</label>
+			</div>
+
+			<div class="relative z-0 w-full mb-5 group">
+				<input
+					type="email"
+					name="email"
+					id="floating_email"
+					class={inputClass}
+					placeholder=" "
+					autocomplete="email"
+					required
+				/>
+				<label for="floating_email" class="peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+					<span class="flex items-center gap-2">
+						<Icon name="outline-email" class="w-4 h-4" />Email
+					</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="grid md:grid-cols-2 md:gap-6">
+			<div class="relative z-0 w-full mb-5 group">
+				<div class="flex gap-2 w-full">
+					<div class="relative z-0 w-24 group">
+						<input
+							type="text"
+							name="countryCode"
+							id="floating_countryCode"
+							class={inputClass}
+							placeholder=" "
+							autocomplete="tel-country-code"
+							value="30 🇬🇷"
+							required
+						/>
+						<label for="floating_countryCode" class="peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Κωδικός</label>
+					</div>
+					<div class="relative z-0 flex-1 group">
+						<input
+							id="floating_phone"
+							type="tel"
+							name="phone"
+							class={inputClass}
+							autocomplete="tel-national"
+							onkeypress="return /[0-9]/.test(event.key) || ['Backspace', 'Delete', 'Tab', 'Enter'].includes(event.key)"
+							placeholder=" "
+							required
+						/>
+						<label for="floating_phone" class="peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+							<span class="flex items-center gap-2">
+								<Icon name="phone-linear" class="w-4 h-4" />Τηλέφωνο
+							</span>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="relative z-0 w-full mb-5 group">
+				<input
+					type="text"
+					name="subject"
+					id="floating_subject"
+					class={inputClass}
+					placeholder=" "
+					autocomplete="off"
+					required
+				/>
+				<label for="floating_subject" class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+					<span class="flex items-center gap-2">
+						<Icon name="info-outline" class="w-4 h-4" />Θέμα
+					</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="relative z-0 w-full mb-5 group">
+			<textarea
+				name="message"
+				id="floating_message"
+				class={inputClass + " resize-y min-h-25 font-sans"}
+				placeholder=" "
+				autocomplete="off"
+			></textarea>
+			<label for="floating_message" class="peer-focus:font-medium absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+				✏ Πώς μπορούμε να σας βοηθήσουμε;
+			</label>
+			<div class="hidden text-red-600 text-sm mt-1"></div>
+		</div>
+
+		<div class="flex items-start mb-5">
+			<input
+				type="checkbox"
+				name="terms"
+				id="terms"
+				required
+				class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 rounded focus:ring-sky-500 focus:ring-2"
+			/>
+			<label for="terms" class="ml-2 text-sm font-medium text-gray-900">
+				Συμφωνώ με τα στοιχεία που υποβλήθηκαν.
+			</label>
+		</div>
+
+		<button
+			type="submit"
+			id="submit-btn"
+			class="cursor-pointer transition-all ease-in-out duration-200 text-white bg-orange-700 hover:bg-orange-500 hover:scale-105 active:scale-95 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+		>
+			<span id="submit-content" class="flex items-center gap-2">
+				<Icon name="paper-plane" class="w-4 h-4" />
+				<span class="font-bold">
+					Υποβολή
+				</span>
+			</span>
+			<span id="loading-content" class="hidden items-center gap-2">
+				<svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+					<path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+				</svg>
+				<span class="font-bold">
+					Αποστολή...
+				</span>
+			</span>
+		</button>
+	</form>
+</div>
+
+<script>
+	import { actions } from "astro:actions";
+	import { z } from "astro:schema";
+
+	const contactSchema = z.object({
+		name: z.string().min(1, "Το όνομα είναι υποχρεωτικό").max(100, "Το όνομα πρέπει να έχει λιγότερους από 100 χαρακτήρες"),
+		email: z.string().min(1, "Το email είναι υποχρεωτικό").email("Το email δεν είναι έγκυρο"),
+		countryCode: z.string().min(2, "Ο κωδικός χώρας πρέπει να έχει τουλάχιστον 2 χαρακτήρες").max(5, "Ο κωδικός χώρας πρέπει να έχει το πολύ 5 χαρακτήρες"),
+		phone: z.string().min(7, "Το τηλέφωνο πρέπει να έχει περισσότερους από 7 χαρακτήρες").max(15, "Το τηλέφωνο πρέπει να έχει λιγότερους από 15 χαρακτήρες"),
+		subject: z.string().max(100, "Το θέμα πρέπει να έχει λιγότερους από 100 χαρακτήρες").optional(),
+		message: z.string().max(600, "Το μήνυμα πρέπει να έχει λιγότερους από 600 χαρακτήρες").optional(),
+		terms: z.boolean().refine(val => val === true, "Πρέπει να συμφωνήσετε με τους όρους")
+	});
+
+	const inputClass = "block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer";
+	const errorClass = "border border-red-500 text-red-900 placeholder-red-700 text-sm focus:ring-red-500 focus:border-red-500 block w-full p-2.5";
+	const nameInput = document.getElementById("floating_name") as HTMLInputElement;
+	const emailInput = document.getElementById("floating_email") as HTMLInputElement;
+	const countryCodeInput = document.getElementById("floating_countryCode") as HTMLInputElement;
+	const phoneInput = document.getElementById("floating_phone") as HTMLInputElement;
+	const termsInput = document.getElementById("terms") as HTMLInputElement;
+	const subjectInput = document.getElementById("floating_subject") as HTMLInputElement;
+	const messageInput = document.getElementById("floating_message") as HTMLTextAreaElement;
+
+	const showError = (input: HTMLElement, msg: string): void => {
+		input.className += " " + errorClass;
+		const parent = input.parentElement;
+		if (!parent) return;
+
+		const existingError = parent.querySelector(".error-msg");
+		if (existingError) existingError.remove();
+
+		const errorDiv = document.createElement("div");
+		errorDiv.className = "error-msg text-red-600 text-sm mt-1";
+		errorDiv.textContent = msg;
+		parent.appendChild(errorDiv);
+	};
+
+	const clearError = (input: HTMLElement): void => {
+		input.className = inputClass;
+		const parent = input.parentElement;
+		if (!parent) return;
+		const errorDiv = parent.querySelector(".error-msg");
+		if (errorDiv) errorDiv.remove();
+	};
+
+	const clearAllErrors = (): void => {
+		[nameInput, emailInput, countryCodeInput, phoneInput, subjectInput, messageInput].forEach(clearError);
+	};
+
+	// Initialize country code with + prefix
+	if (!countryCodeInput.value.startsWith("+")) {
+		countryCodeInput.value = "+" + countryCodeInput.value;
+	}
+
+	// Auto-prefix + for country code and prevent its deletion
+	countryCodeInput.addEventListener("input", () => {
+		let value = countryCodeInput.value;
+		// Remove any non-digit characters except +
+		value = value.replace(/[^\d+]/g, "");
+		// If value doesn't start with +, add it
+		if (!value.startsWith("+")) {
+			value = "+" + value.replace(/\+/g, "");
+		}
+		// Ensure only one + at the beginning
+		if (((value ?? '') as any).match(/\+/g)?.length > 1) {
+			value = "+" + value.replace(/\+/g, "");
+		}
+
+		countryCodeInput.value = value === "+30"
+			? `${value} 🇬🇷`
+			: value;
+	});
+
+	// Prevent deletion of the + sign
+	countryCodeInput.addEventListener("keydown", (e) => {
+		const cursorPosition = countryCodeInput.selectionStart;
+		if (e.key === "Backspace" && countryCodeInput.value.includes("🇬🇷")) {
+			countryCodeInput.value = "+30";
+		}
+
+		// Prevent cursor from being placed before the +
+		if (e.key === "ArrowLeft" && cursorPosition === 1) {
+			e.preventDefault();
+		}
+	});
+
+	// Ensure cursor doesn't go before the +
+	countryCodeInput.addEventListener("click", () => {
+		if (countryCodeInput.selectionStart === 0) {
+			countryCodeInput.setSelectionRange(1, 1);
+		}
+	});
+
+	const form = document.getElementById("contact-form") as HTMLFormElement;
+	const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+	const submitContent = document.getElementById("submit-content") as HTMLSpanElement;
+	const loadingContent = document.getElementById("loading-content") as HTMLSpanElement;
+
+	const showLoading = () => {
+		submitBtn.disabled = true;
+		submitContent.classList.add("hidden");
+		loadingContent.classList.remove("hidden");
+		loadingContent.classList.add("flex");
+	};
+
+	const hideLoading = () => {
+		submitBtn.disabled = false;
+		submitContent.classList.remove("hidden");
+		loadingContent.classList.add("hidden");
+		loadingContent.classList.remove("flex");
+	};
+
+	form.addEventListener("submit", async e => {
+		e.preventDefault();
+		clearAllErrors();
+		showLoading();
+
+		const formData = new FormData(form);
+		const rawCountryCode = formData.get("countryCode") as string;
+		const formObject = {
+			name: formData.get("name") as string,
+			email: formData.get("email") as string,
+			countryCode: rawCountryCode.match(/\d+/)?.[0] || "",
+			phone: formData.get("phone") as string,
+			subject: formData.get("subject") as string,
+			message: formData.get("message") as string,
+			terms: formData.get("terms") === "on"
+		};
+
+		const validation = contactSchema.safeParse(formObject);
+
+		if (!validation.success) {
+			const errors = validation.error.flatten().fieldErrors;
+
+			if (errors.name) showError(nameInput, errors.name[0]);
+			if (errors.email) showError(emailInput, errors.email[0]);
+			if (errors.countryCode) showError(countryCodeInput, errors.countryCode[0]);
+			if (errors.phone) showError(phoneInput, errors.phone[0]);
+			if (errors.subject) showError(subjectInput, errors.subject[0]);
+			if (errors.message) showError(messageInput, errors.message[0]);
+			if (errors.terms) showError(termsInput, errors.terms[0]);
+
+			return;
+		}
+
+		// TODO: The timestamp should be from the time they try to fill the form
+		// formData.set("timestamp", Date.now().toString());
+		const res = await actions.contact.sendEmail(formData);
+		hideLoading();
+
+		if (res.error && res.error.code === "TOO_MANY_REQUESTS") {
+			showError(messageInput, "Παρακαλώ περιμένετε λίγα λεπτά πριν προσπαθήσετε ξανά");
+			return;
+		}
+
+		// Show success message if no errors
+		if (!res.error) {
+			// Clear form
+			form.reset();
+			// Show success message
+			const successDiv = document.createElement("div");
+			successDiv.className = "text-green-800 mb-4 p-3 bg-green-50 rounded border-l-4 border-green-500 transform translate-y-[-20px] opacity-0 transition-all duration-300 ease-out";
+			successDiv.textContent = "Ευχαριστούμε για το μήνυμά σας! Θα επικοινωνήσουμε μαζί σας σύντομα.";
+			form.parentElement?.insertBefore(successDiv, form);
+
+			// Trigger slide-in animation
+			setTimeout(() => {
+				successDiv.classList.remove("translate-y-[-20px]", "opacity-0");
+				successDiv.classList.add("translate-y-0", "opacity-100");
+			}, 50);
+
+			// Remove success message after 10 seconds
+			setTimeout(() => {
+				successDiv.classList.add("translate-y-[-20px]", "opacity-0");
+				setTimeout(() => successDiv.remove(), 300);
+			}, 10000);
+		}
+	});
+</script>

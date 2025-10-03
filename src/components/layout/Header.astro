@@ -1,0 +1,110 @@
+---
+import Logo from "@components/common/Logo.astro";
+import SocialList from "@components/common/SocialList.astro";
+import BurgerMenu from "@components/common/BurgerMenu.astro";
+import ContactInfo from "@components/common/ContactInfo.astro";
+import "./header.css";
+
+const homeNavItem = {
+	label: "Αρχική",
+	href: "/",
+};
+
+const navItems = [
+	homeNavItem,
+	{ label: "Επικοινωνία", href: "/epikoinonia" },
+	{ label: "Κουζίνες", href: "/kouzines" },
+	{ label: "Μπάνια", href: "/mpania" },
+	{ label: "Υπνοδωμάτια", href: "/ypnodomatia" },
+	{ label: "Έργα", href: "/blog" },
+];
+---
+
+<header class="flex h-14 w-full max-w-screen items-center text-white" id="nav-header">
+	<nav class="mx-4 flex w-full items-center justify-between md:mx-12">
+		<a class="m-0" href="/" title="Αρχική">
+			<span class="z-2 flex w-32 items-center justify-center md:w-48 lg:w-56">
+				<Logo priority={true} />
+			</span>
+		</a>
+		<div class="menu-reveal-box-wrapper">
+			<div
+				class="menu-reveal-box absolute top-0 left-0 z-2 flex h-full w-full flex-col items-center justify-around pt-8">
+				<div class="px-8 md:flex md:flex-row md:justify-around">
+					<ul class="nav-items items-left flex flex-col justify-center text-left font-bold">
+						{
+							navItems.map(item => (
+								<li class="m-1 list-none gap-1">
+									<a class="nav-item clickable block w-full" href={item.href} title={item.label}>
+										{item.label}
+									</a>
+								</li>
+							))
+						}
+					</ul>
+					<div class="info-container">
+						<ContactInfo className="pt-12 md:ml-24" />
+					</div>
+				</div>
+				<div class="socials-container mr-2 px-8 pb-16">
+					<SocialList />
+					<div class="mt-8 w-full border-t border-white/20"></div>
+				</div>
+			</div>
+		</div>
+		<BurgerMenu />
+	</nav>
+</header>
+
+<script>
+	function init() {
+		const elementsThatNeedChange = [
+			document.getElementsByClassName("menu-reveal-box-wrapper")[0],
+			document.getElementsByClassName("nav-items")[0],
+			document.getElementsByClassName("info-container")[0],
+			document.getElementsByClassName("socials-container")[0],
+		];
+
+		let isAnimating = false; // Debounce flag
+		const handleMenuClose = () => {
+			elementsThatNeedChange.forEach(el => el.classList.add("closing"));
+
+			// Wait for the closing animation to complete before removing classes
+			setTimeout(() => {
+				elementsThatNeedChange.forEach(el => el.classList.remove("opened", "closing"));
+				isAnimating = false;
+			}, 600);
+		};
+
+		(document.getElementById("burger-check") as HTMLInputElement)?.addEventListener("change", function () {
+			// Prevent rapid clicking during animation
+			if (isAnimating) {
+				// Revert the checkbox state
+				this.checked = !this.checked;
+				return;
+			}
+
+			if (this.checked) {
+				// Opening: remove closing class and add opened class
+				isAnimating = true;
+				elementsThatNeedChange.forEach(el => {
+					el.classList.remove("closing");
+					el.classList.add("opened");
+				});
+
+				// Allow clicks again after opening animation completes
+				setTimeout(() => {
+					isAnimating = false;
+				}, 600);
+			} else {
+				// Closing: start the closing sequence
+				isAnimating = true;
+				handleMenuClose();
+			}
+		});
+	}
+
+	init();
+
+	document.addEventListener("astro:after-swap", init);
+</script>

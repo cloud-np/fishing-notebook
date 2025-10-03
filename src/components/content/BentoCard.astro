@@ -1,0 +1,29 @@
+---
+interface Props {
+    title: string;
+    // TODO: We may be able to avoid this with more clean?
+    hasFooter: boolean;
+    reverse?: boolean;
+    colSpan?: boolean;
+}
+const { title, hasFooter, colSpan, reverse } = Astro.props;
+---
+
+<div class={`${colSpan ? 'lg:col-span-2' : 'lg:col-span-1'} flex ${reverse ? 'flex-col-reverse' : 'flex-col'} p-8 rounded-xl bg-[rgba(40,40,40,0.30)] group z-0`}>
+    <div>
+        <h3 class="text-lg font-semibold text-white my-3">
+            {title}
+        </h3>
+        <slot name="subTitle" />
+
+        <p class="text-sm font-normal text-neutral-400 max-w-fit">
+            <slot />
+        </p>
+    </div>
+
+    {hasFooter &&
+        <div class="mt-4 max-h-80 z-40 bg-[rgba(40,40,40,0.30)] mask-[radial-gradient(80%_80%_at_50%_50%,white_0%,transparent_100%)]">
+            <slot name="footer" />
+        </div>
+    }
+</div>

@@ -1,0 +1,28 @@
+---
+import { settings } from '@i18n/settings.const';
+import SocialList from '@components/common/SocialList.astro';
+import Logo from '@components/common/Logo.astro';
+import ContactInfo from '@components/common/ContactInfo.astro';
+---
+
+<footer class="mt-auto pt-16 px-8 min-h-50 flex flex-col justify-center md:justify-between">
+	<div class="flex flex-col gap-4 items-center md:items-start md:flex-row justify-between">
+		<div class="flex flex-col items-center text-base mb-4">
+			<Logo width={150} />
+			<p>&copy; {new Date().getFullYear()} {settings.name}</p>
+			<div class="pt-1 -ml-3">
+				<SocialList />
+			</div>
+		</div>
+		<div class="flex flex-col items-start">
+			<ContactInfo />
+		</div>
+	</div>
+</footer>
+
+<style>
+	footer {
+		background-color: var(--c-bg_dark);
+		color: var(--c-text_light);
+	}
+</style>

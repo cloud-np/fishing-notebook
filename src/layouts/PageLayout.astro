@@ -1,0 +1,19 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import type { Props as BaseHeadProps } from "@components/core/BaseHead.astro";
+import Header from "@components/layout/Header.astro";
+import Footer from "@components/layout/Footer.astro";
+
+export interface Props {
+	seo?: BaseHeadProps;
+	isLightTheme?: boolean;
+}
+
+const { seo, isLightTheme = false } = Astro.props as Props;
+---
+
+<BaseLayout seo={seo} isLightTheme={isLightTheme}>
+	<Header slot="header" />
+	<slot />
+	<Footer slot="footer" />
+</BaseLayout>

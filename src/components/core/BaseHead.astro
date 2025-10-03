@@ -1,0 +1,226 @@
+---
+import { settings } from "@i18n/settings.const";
+import { getLangFromUrl, useTranslations } from "@i18n/utils";
+
+import "../../styles/reset.css";
+// TODO: This should be loaded after the component starts to load ideally
+import "../../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+
+export interface Props {
+	title?: string;
+	description?: string;
+	canonicalURL?: URL | string;
+	image?: string;
+	keywords?: string;
+	author?: string;
+	publishedTime?: string;
+	modifiedTime?: string;
+	section?: string;
+	tags?: string[];
+	noindex?: boolean;
+	nofollow?: boolean;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const title = Astro.props.title || t("settings.title");
+const description = Astro.props.description || t("settings.description");
+const canonicalURL = Astro.props.canonicalURL || new URL(Astro.url.pathname, Astro.site);
+const image = new URL(Astro.props.image || "./social.png", Astro.site);
+const keywords = Astro.props.keywords || t("settings.keywords");
+const author = Astro.props.author || settings.author;
+const publishedTime = Astro.props.publishedTime;
+const modifiedTime = Astro.props.modifiedTime;
+const section = Astro.props.section;
+const tags = Astro.props.tags || [];
+const noindex = Astro.props.noindex || false;
+const nofollow = Astro.props.nofollow || false;
+---
+
+<meta charset="utf-8" />
+
+<title>{title}</title>
+
+<!-- Favicon and App Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/favicon.svg" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<!-- Sitemap -->
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- Basic Meta Tags -->
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="keywords" content={keywords} />
+<meta name="author" content={author} />
+<meta name="generator" content={Astro.generator} />
+<meta name="robots" content={noindex ? "noindex" : nofollow ? "nofollow" : "index, follow"} />
+<meta name="language" content={settings.language} />
+<meta name="geo.region" content={settings.country} />
+<meta name="geo.placename" content={settings.region} />
+
+<!-- Viewport -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+<!-- DNS Prefetch for Performance -->
+<link rel="dns-prefetch" href="//www.googletagmanager.com" />
+
+<!-- RSS -->
+<link
+	rel="alternate"
+	type="application/rss+xml"
+	title={`${settings.name} Fishing Logs`}
+	href={`${settings.url}/feed/logs.xml`}
+/>
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- To let javascript handle transitions between pages -->
+<ClientRouter />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={section ? "article" : "website"} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
+<meta property="og:locale" content={`${settings.language}_${settings.country}`} />
+<meta property="og:site_name" content={settings.name} />
+{author && <meta property="og:author" content={author} />}
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{section && <meta property="article:section" content={section} />}
+{tags.length > 0 && tags.map(tag => <meta property="article:tag" content={tag} />)}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={image} />
+<meta property="twitter:image:alt" content={title} />
+
+<!-- Additional Social Media Meta Tags -->
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:secure_url" content={image} />
+
+<!-- Schema.org Structured Data -->
+<script
+	is:inline
+	type="application/ld+json"
+	set:html={JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": section ? "Article" : settings.business.type,
+		name: settings.name,
+		url: settings.url,
+		logo: `${settings.url}/favicon.svg`,
+		description: description,
+		address: {
+			"@type": "PostalAddress",
+			streetAddress: t("settings.business.contact.address.street"),
+			addressLocality: t("settings.business.contact.address.city"),
+			postalCode: settings.business.contact.address.postalCode,
+			addressCountry: t("settings.business.contact.address.country"),
+		},
+		contactPoint: {
+			"@type": "ContactPoint",
+			contactType: "customer service",
+			telephone: settings.business.contact.phone,
+			email: settings.business.contact.email,
+			availableLanguage: ["Greek", "English"],
+		},
+		sameAs: Object.values(settings.business.social),
+		serviceArea: {
+			"@type": "Country",
+			name: settings.region,
+		},
+		openingHours: [
+			`Mo-Fr ${settings.business.hours.monday}`,
+			`Sa ${settings.business.hours.saturday}`,
+			`Su ${t("settings.business.hours.sunday")}`,
+		],
+		applicationCategory: "SportsApplication",
+		offers: {
+			"@type": "Offer",
+			price: "0",
+			priceCurrency: "EUR",
+		},
+		featureList: settings.business.services[lang].join(", "),
+	})}
+/>
+
+{/* Article Schema for posts */}
+{
+	section && publishedTime && (
+		<script
+			is:inline
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				"@context": "https://schema.org",
+				"@type": "Article",
+				headline: title,
+				description: description,
+				image: image,
+				author: {
+					"@type": "Organization",
+					name: author,
+				},
+				publisher: {
+					"@type": "Organization",
+					name: settings.name,
+					logo: {
+						"@type": "ImageObject",
+						url: `${settings.url}/favicon.svg`,
+					},
+				},
+				datePublished: publishedTime,
+				dateModified: modifiedTime || publishedTime,
+				mainEntityOfPage: {
+					"@type": "WebPage",
+					"@id": canonicalURL,
+				},
+			})}
+		/>
+	)
+}
+
+<!-- Security Headers -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+<!--
+ TODO: This should be set from the HTTP header
+ <meta http-equiv="X-Frame-Options" content="DENY" />
+-->
+<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+<!-- Theme Color for Mobile Browsers -->
+<meta name="theme-color" content="#000000" />
+<meta name="msapplication-TileColor" content="#000000" />
+
+<!-- Partytown installs 3rd party libs using a WebWorker so we don't mind loading this first -->
+<script is:inline type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-G8SYECNPWT"></script>
+
+<!-- Google Analytics - Always load but with denied consent by default -->
+<script is:inline type="text/partytown">
+	// Define dataLayer and the gtag function.
+	window.dataLayer = window.dataLayer || [];
+	window.gtag = function gtag() {
+		window.dataLayer.push(arguments);
+	};
+	window.gtag("consent", "default", {
+		ad_storage: "denied", // Controls ad-related cookies
+		ad_user_data: "denied", // Controls user data for ads
+		ad_personalization: "denied", // Controls ad personalization
+		analytics_storage: "denied", // Controls ALL GA cookies (_ga, _gid, etc.)
+	});
+	window.gtag("js", new Date());
+	window.gtag("config", "G-G8SYECNPWT");
+</script>

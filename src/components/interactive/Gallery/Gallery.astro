@@ -1,0 +1,331 @@
+---
+import type { LocalImage } from "@client-libs/images";
+import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+
+interface GalleryImage extends LocalImage {
+	category: string;
+}
+
+interface Props {
+	images: GalleryImage[];
+	className?: string;
+}
+
+const { images = [], className = "" } = Astro.props;
+
+const groupedImages = images.reduce(
+	(acc, image, index) => {
+		if (!acc[image.category]) {
+			acc[image.category] = [];
+		}
+		acc[image.category].push({ ...image, originalIndex: index });
+		return acc;
+	},
+	{} as Record<string, (GalleryImage & { originalIndex: number })[]>
+);
+---
+
+{images.slice(0, 3).map(img => <link rel="preload" as="image" href={img.imageMetadata.src} />)}
+<div class={`max-w-6xl mx-auto px-4 ${className}`} data-gallery>
+	{
+		Object.entries(groupedImages).map(([category, categoryImages], i) => (
+			<div class="mb-12 flex flex-col items-center justify-center">
+				<h2 class="f-mono mb-6 text-center text-2xl font-semibold text-gray-800">{category}</h2>
+				<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] md:gap-4">
+					{categoryImages.map((image, j) => (
+						<button
+							class="group gallery-item cursor-pointer overflow-hidden rounded-xl border-none bg-transparent p-0 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
+							data-image={JSON.stringify(image)}
+							data-index={image.originalIndex}
+							style={`animation: galleryScale 0.4s ${j * 100}ms cubic-bezier(0.23, 1, 0.320, 1) both;`}>
+							<div class="relative aspect-4/3 overflow-hidden rounded-xl bg-gray-200">
+								{/* Skeleton placeholder */}
+								<div class="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200" />
+								{/* Prioritize the very first images since they are critical for LCP */}
+								<Image
+									priority={i === 0 && j < 3}
+									loading={i === 0 && j < 3 ? "eager" : "lazy"}
+									src={image.imageMetadata}
+									alt={image.alt}
+									class="relative z-10 h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+									layout="constrained"
+								/>
+								<div class="absolute inset-0 z-10 flex items-center justify-center bg-linear-to-br from-transparent to-black/70 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100">
+									<div class="p-4 text-center text-white">
+										<Icon class="mx-auto mb-2 h-8 w-8 opacity-90" name="magnify" />
+										<p class="text-sm font-medium opacity-95">{image.alt}</p>
+									</div>
+								</div>
+							</div>
+						</button>
+					))}
+				</div>
+			</div>
+		))
+	}
+</div>
+
+<div
+	id="gallery-modal"
+	class="fixed inset-0 z-1000 flex items-center justify-center bg-black/90 p-8 pt-2 opacity-0 transition-opacity duration-300 md:p-4">
+	<div class="modal-content relative flex max-h-[90dvh] max-w-[90dvw] flex-col items-center">
+		<button
+			id="close-modal"
+			class="absolute top-4 right-4 z-10 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border-none bg-white/70 transition-colors duration-200 hover:bg-white md:h-10 md:w-10"
+			aria-label="Close Modal">
+			<svg
+				class="h-6 w-6 text-gray-800 md:h-5 md:w-5"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+			</svg>
+		</button>
+
+		<div
+			class="modal-image-container flex flex-col items-center overflow-hidden rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.5)]">
+			<img id="modal-image" src="" alt="" class="block max-h-[60dvh] object-contain" />
+
+			<div class="flex w-full flex-col items-center justify-center bg-white p-6 text-center">
+				<h3 id="modal-title" class="mb-2 text-xl font-semibold text-gray-800"></h3>
+				<p id="modal-category" class="text-sm tracking-wider text-gray-500 uppercase"></p>
+			</div>
+		</div>
+
+		<button
+			id="prev-button"
+			class="absolute top-1/2 left-4 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-white/40 transition-colors duration-200 hover:bg-white md:h-10 md:w-10"
+			aria-label="Previous Button">
+			<svg
+				class="h-6 w-6 text-gray-800 md:h-5 md:w-5"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+			</svg>
+		</button>
+
+		<button
+			id="next-button"
+			class="absolute top-1/2 right-4 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-white/40 transition-colors duration-200 hover:bg-white md:h-10 md:w-10"
+			aria-label="Next Button">
+			<svg
+				class="h-6 w-6 text-gray-800 md:h-5 md:w-5"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+			</svg>
+		</button>
+
+		<div
+			id="image-counter"
+			class="absolute -bottom-12 rounded-full bg-slate-500/70 px-4 py-2 text-sm font-medium text-white">
+			<span id="current-index">1</span> / <span id="total-images">1</span>
+		</div>
+	</div>
+</div>
+
+<style>
+	@keyframes galleryScale {
+		from {
+			transform: scale(0.8);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes flyIn {
+		from {
+			transform: translateY(50px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	@keyframes flyOut {
+		from {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		to {
+			transform: translateY(30px);
+			opacity: 0;
+		}
+	}
+
+	@keyframes scaleIn {
+		from {
+			transform: scale(0.8);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	.modal-content {
+		animation: scaleIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) 0.15s both;
+	}
+
+	.modal-image-container {
+		animation: flyIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
+	}
+
+	#gallery-modal.show {
+		display: flex;
+		opacity: 1;
+	}
+</style>
+
+<script>
+	interface GalleryImage {
+		imageMetadata: ImageMetadata;
+		alt: string;
+		category: string;
+		originalIndex: number;
+	}
+
+	class GalleryModal {
+		images: GalleryImage[] = [];
+		selectedImageIndex = 0;
+		modal: HTMLElement;
+		modalImage: HTMLImageElement;
+		modalTitle: HTMLElement;
+		modalCategory: HTMLElement;
+		currentIndexSpan: HTMLElement;
+		totalImagesSpan: HTMLElement;
+		prevButton: HTMLButtonElement;
+		nextButton: HTMLButtonElement;
+		closeButton: HTMLButtonElement;
+
+		constructor() {
+			this.modal = document.getElementById("gallery-modal")!;
+			this.modalImage = document.getElementById("modal-image") as HTMLImageElement;
+			this.modalTitle = document.getElementById("modal-title")!;
+			this.modalCategory = document.getElementById("modal-category")!;
+			this.currentIndexSpan = document.getElementById("current-index")!;
+			this.totalImagesSpan = document.getElementById("total-images")!;
+			this.prevButton = document.getElementById("prev-button") as HTMLButtonElement;
+			this.nextButton = document.getElementById("next-button") as HTMLButtonElement;
+			this.closeButton = document.getElementById("close-modal") as HTMLButtonElement;
+
+			this.init();
+		}
+
+		init() {
+			const galleryItems = document.querySelectorAll(".gallery-item");
+			const allImages: GalleryImage[] = [];
+
+			galleryItems.forEach(item => {
+				const imageData = JSON.parse(item.getAttribute("data-image")!);
+				allImages.push(imageData);
+
+				item.addEventListener("click", () => {
+					this.openModal(imageData, imageData.originalIndex, allImages);
+				});
+			});
+
+			this.modal.addEventListener("click", e => {
+				if (e.target === this.modal) {
+					this.closeModal();
+				}
+			});
+
+			this.closeButton.addEventListener("click", () => this.closeModal());
+			this.prevButton.addEventListener("click", e => this.navigateImage(e, "prev"));
+			this.nextButton.addEventListener("click", e => this.navigateImage(e, "next"));
+
+			document.addEventListener("keydown", e => this.handleKeydown(e));
+		}
+
+		openModal(image: GalleryImage, index: number, allImages: GalleryImage[]) {
+			this.images = allImages;
+			this.selectedImageIndex = index;
+			this.updateModalContent(image);
+			this.modal.classList.remove("hidden");
+			this.modal.classList.add("show");
+			document.body.style.overflow = "hidden";
+		}
+
+		closeModal() {
+			this.modal.classList.remove("show");
+			setTimeout(() => {
+				this.modal.classList.add("hidden");
+			}, 200);
+			document.body.style.overflow = "";
+		}
+
+		navigateImage(e: Event, direction: "prev" | "next") {
+			e.stopPropagation();
+
+			if (direction === "next") {
+				this.selectedImageIndex = (this.selectedImageIndex + 1) % this.images.length;
+			} else {
+				this.selectedImageIndex = (this.selectedImageIndex - 1 + this.images.length) % this.images.length;
+			}
+
+			this.updateModalContent(this.images[this.selectedImageIndex]);
+		}
+
+		updateModalContent(image: GalleryImage) {
+			this.modalImage.src = image.imageMetadata.src;
+			this.modalImage.alt = image.alt;
+			this.modalTitle.textContent = image.alt;
+			this.modalCategory.textContent = image.category;
+			this.currentIndexSpan.textContent = (this.selectedImageIndex + 1).toString();
+			this.totalImagesSpan.textContent = this.images.length.toString();
+
+			if (this.images.length <= 1) {
+				this.prevButton.style.display = "none";
+				this.nextButton.style.display = "none";
+			} else {
+				this.prevButton.style.display = "flex";
+				this.nextButton.style.display = "flex";
+			}
+		}
+
+		handleKeydown(e: KeyboardEvent) {
+			if (!this.modal.classList.contains("show")) return;
+
+			switch (e.key) {
+				case "Escape":
+					this.closeModal();
+					break;
+				case "ArrowLeft":
+					this.navigateImage(e, "prev");
+					break;
+				case "ArrowRight":
+					this.navigateImage(e, "next");
+					break;
+			}
+		}
+	}
+
+	function init() {
+		new GalleryModal();
+	}
+
+	init();
+	document.addEventListener("astro:after-swap", init);
+</script>

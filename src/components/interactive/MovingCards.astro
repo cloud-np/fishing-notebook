@@ -1,0 +1,109 @@
+---
+interface Props {
+    duration: number;
+}
+const { duration } = Astro.props;
+---
+
+<div class="wrapper">
+    <div class="inner max-w-7xl">
+        <div
+            class="scroller-container flex min-w-full w-full flex-nowrap h-80 rounded-xl z-40"
+            style={{ "--duration": `${duration}ms` }}
+        >
+            <slot />
+        </div>
+    </div>
+</div>
+
+<script>
+    // TOOD: https://ui.aceternity.com/components/infinite-moving-cards
+    // Translate the above from React to vanilla.
+    // function previewImage(index) {
+    //     const dis = document.getElementById("display");
+    //     if (!dis) {
+    //         return;
+    //     }
+
+    //     const img = Array.from(dis.children)[index] as HTMLElement;
+    //     img.style.height = "100%";
+    //     img.style.width = "100%";
+    //     // clonedImg.style.height = clonedImg.naturalHeight;
+    //     // clonedImg.style.width = clonedImg.naturalWdith;
+    //     // document.getElementById("display")?.replaceChildren(clonedImg);
+    // }
+
+    function init() {
+        const scrollerContainer = document.getElementsByClassName("scroller-container")[0] as HTMLElement;
+        const imagesContainer = document.getElementsByClassName("images-container")[0] as HTMLElement;
+
+        if (!scrollerContainer?.children) {
+            return;
+        }
+
+        // These are the display images that will be shown when hovering the regular ones.
+        // document.getElementById("display")?.replaceChildren(scrollerContainer.cloneNode(true));
+
+        // For each image add the ability to preview it.
+        // Array.from(imagesContainer.children).forEach((child, index) => {
+        //     child.addEventListener("mouseover", () => previewImage(index));
+        // });
+
+        // This is needed it for the animation to be appear more flawless.
+        const clonedEl = imagesContainer.cloneNode(true);
+        scrollerContainer.appendChild(clonedEl);
+
+        scrollerContainer.addEventListener("mouseover", () => {
+            scrollerContainer.style.animationPlayState = 'paused';
+        });
+
+        scrollerContainer.addEventListener("mouseout", () => {
+            scrollerContainer.style.animationPlayState = 'running';
+        });
+    }
+
+	init();
+	document.addEventListener("astro:after-swap", () => init());
+    // imagesEl
+</script>
+
+<style>
+    .wrapper {
+        width: 100%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        overflow: hidden;
+    }
+
+    .scroller-container {
+        position: relative;
+        animation: swipe var(--duration) linear infinite forwards;
+    }
+
+    .scroller-container {
+        max-height: 20rem;
+    }
+
+    @keyframes swipe {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translate(calc(-50% - 0.5rem));
+        }
+    }
+/*
+    #display {
+        transition: all ease 2s;
+        width: 50%;
+        position: absolute;
+        height: 50%;
+        left: 0;
+        z-index: 100;
+    } */
+
+</style>

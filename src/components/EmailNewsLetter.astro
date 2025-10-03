@@ -1,0 +1,31 @@
+---
+import Container from '@components/containers/Container.astro';
+---
+
+<div>
+    <Container>
+        <form>
+            <div class="email-container">
+                <label>Subscribe</label>
+                <input type="text" name="email" placeholder="Your email address" />
+            </div>
+        </form>
+    </Container>
+</div>
+
+<style>
+    .email-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        width: max(50%, 300px);
+    }
+    input {
+        margin-top: 1rem;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+        font-size: small;
+    }
+</style>

@@ -1,0 +1,39 @@
+---
+import { languages } from '../../i18n/ui';
+import { getLangFromUrl } from '../../i18n/utils';
+
+const currentLang = getLangFromUrl(Astro.url);
+const currentPath = Astro.url.pathname;
+const pathWithoutLang = currentPath.replace(/^\/[a-z]{2}/, '') || '/';
+---
+
+<div class="language-switcher">
+  <ul class="flex items-center gap-2">
+    {Object.entries(languages).map(([lang, label]) => {
+      const href = lang === 'el' ? pathWithoutLang : `/${lang}${pathWithoutLang}`;
+      const isActive = lang === currentLang;
+      
+      return (
+        <li>
+          <a 
+            href={href}
+            class={`px-3 py-1 rounded-md text-sm transition-colors duration-200 ${
+              isActive 
+                ? 'bg-orange-500 text-white' 
+                : 'text-gray-300 hover:text-orange-400 hover:bg-gray-800'
+            }`}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<style>
+  .language-switcher {
+    z-index: 50;
+  }
+</style>

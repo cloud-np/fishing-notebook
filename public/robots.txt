@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Disallow admin or private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://home-upgrades.gr/sitemap-index.xml
+
+# Slower crawling for aggressive bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10

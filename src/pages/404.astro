@@ -1,0 +1,33 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+
+const seo = {
+    title: "404 - Σελίδα δεν βρέθηκε | Home Upgrades",
+    description: "Η σελίδα που αναζητάτε δεν βρέθηκε. Επιστρέψτε στην αρχική σελίδα του Home Upgrades.",
+    noindex: true
+};
+---
+
+<style>
+    section {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+    div {
+        margin-bottom: 2rem;
+    }
+    p {
+        font-size: 1.2rem;
+    }
+</style>
+
+<PageLayout seo={seo}>
+    <section>
+        <h1 class="mt-28 text-3xl">404</h1>
+        <p class="m-6">Δεν βρέθηκε η σελίδα</p>
+    </section>
+</PageLayout>
