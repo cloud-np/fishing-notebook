@@ -155,8 +155,9 @@ const seo = {
 </PageLayout>
 
 <script>
-	import { actions } from "astro:actions";
-	const { signIn, signOut } = await import("../client-libs/auth");
+	import { fromAction } from "svelte/attachments";
+
+	const { signIn, signUp, signOut } = await import("../client-libs/auth");
 
 	// Tab switching
 	const tabSignin = document.getElementById("tab-signin") as HTMLButtonElement;
@@ -249,31 +250,35 @@ const seo = {
 		successMessage.classList.add("hidden");
 
 		signupBtn.disabled = true;
-		signupBtn.textContent = "Φόρτωση...";
+		signupBtn.textContent = "Loading...";
 
 		try {
 			const formData = new FormData(signupForm);
-			const { data, error } = await actions.signUp(formData);
-			// TODO: Ideally we use this example:
-			// 			import { authClient } from "@/lib/auth-client"; //import the auth client
-			// const { data, error } = await authClient.signUp.email({
-			//         email, // user email address
-			//         password, // user password -> min 8 characters by default
-			//         name, // user display name
-			//         image, // User image URL (optional)
-			//         callbackURL: "/dashboard" // A URL to redirect to after the user verifies their email (optional)
-			//     }, {
-			//         onRequest: (ctx) => {
-			//             //show loading
-			//         },
-			//         onSuccess: (ctx) => {
-			//             //redirect to the dashboard or sign in page
-			//         },
-			//         onError: (ctx) => {
-			//             // display the error message
-			//             alert(ctx.error.message);
-			//         },
-			// });
+			const email = formData.get("email");
+			const password = formData.get("password");
+			const name = formData.get("name");
+			const image = formData.get("image");
+			const { data, error } = await signUp.email(
+				{
+					email: `${email ?? ""}`,
+					password: `${password ?? ""}`, // user password -> min 8 characters by default
+					name: `${name ?? ""}`, // user display name
+					image: `${image ?? ""}`, // User image URL (optional)
+				},
+				{
+					onRequest: ctx => {
+						//show loading
+						signupBtn.textContent = "Loading...";
+					},
+					onSuccess: ctx => {
+						//redirect to the dashboard or sign in page
+					},
+					onError: ctx => {
+						// display the error message
+						alert(ctx.error.message);
+					},
+				}
+			);
 
 			if (error) {
 				throw new Error(error.message);

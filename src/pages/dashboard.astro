@@ -1,6 +1,7 @@
 ---
-import { auth } from "@auth";
-export const prerender = false; // Not needed in 'server' mode
+import { auth } from "src/actions/auth";
+
+export const prerender = false;
 
 const session = await auth.api.getSession({
 	headers: Astro.request.headers,

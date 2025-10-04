@@ -1,7 +1,9 @@
 import { betterAuth } from "better-auth";
 import { passkey } from "better-auth/plugins/passkey";
 import { twoFactor } from "better-auth/plugins";
+import { createAuthMiddleware } from "better-auth/api";
 import Database from "better-sqlite3";
+import { getEmailService } from "@libs/services/services";
 
 export const auth = betterAuth({
 	database: new Database("./auth.sqlite"),
@@ -14,15 +16,16 @@ export const auth = betterAuth({
 	},
 	emailAndPassword: {
 		enabled: true,
-		async beforeSignUp(data) {
-			// Add Zod validation here
-			console.log("Before sign up");
-			return data;
-		},
-		async afterSignUp(data) {
-			// Add custom logic here
-			console.log("After sign up");
-			return data;
+	},
+	emailVerification: {
+		sendOnSignUp: true,
+		sendVerificationEmail: async ({ user, url, token }, request) => {
+			await getEmailService().sendEmail({
+				name: user.name,
+				email: user.email,
+				subject: "Verify your email address",
+				html: `Click the link to verify your email: ${url}`,
+			});
 		},
 	},
 	socialProviders: {

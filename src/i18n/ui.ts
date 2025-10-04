@@ -1,42 +1,42 @@
 import { cookie } from "./cookie.const";
 import { gallery } from "./gallery.const";
-import { settings } from "./settings.const";
+import { settings } from "../settings.const";
 
 export const languages = {
-	el: 'Ελληνικά',
-	en: 'English',
+	el: "Ελληνικά",
+	en: "English",
 };
 
-export const defaultLang = 'el';
+export const defaultLang = "el";
 
 export const ui = {
 	nav: {
 		home: {
-			el: 'Αρχική',
-			en: 'Home',
+			el: "Αρχική",
+			en: "Home",
 		},
 		contact: {
-			el: 'Επικοινωνία',
-			en: 'Contact',
+			el: "Επικοινωνία",
+			en: "Contact",
 		},
 		kitchens: {
-			el: 'Κουζίνες',
-			en: 'Kitchens',
+			el: "Κουζίνες",
+			en: "Kitchens",
 		},
 		bathrooms: {
-			el: 'Μπάνια',
-			en: 'Bathrooms',
+			el: "Μπάνια",
+			en: "Bathrooms",
 		},
 		projects: {
-			el: 'Έργα',
-			en: 'Projects',
+			el: "Έργα",
+			en: "Projects",
 		},
 		bedrooms: {
-			el: 'Υπνοδωμάτια',
-			en: 'Bedrooms',
+			el: "Υπνοδωμάτια",
+			en: "Bedrooms",
 		},
 	},
 	gallery,
 	cookie,
-	settings
+	settings,
 } as const;

@@ -9,7 +9,7 @@
 		"paths": {
 			"@styles/*": ["src/styles/*"],
 			"@assets/*": ["src/assets/*"],
-			"@auth": ["src/actions/auth/index"],
+			"@auth": ["src/actions/auth"],
 			"@libs/*": ["src/actions/libs/*"],
 			"@client-libs/*": ["src/client-libs/*"],
 			"@data/*": ["src/data/*"],

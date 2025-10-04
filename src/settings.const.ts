@@ -1,5 +1,6 @@
 export const settings = {
-	url: "https://fishing-notebook.gr",
+	site: "fish.cloudnp.xyz",
+	url: "https://fish.cloudnp.xyz",
 	name: "Fishing Notebook",
 	title: {
 		el: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",
