@@ -1,5 +1,7 @@
 ---
 import { auth } from "src/actions/auth";
+import Calendar2 from "@components/interactive/Calendar/Calendar2.svelte";
+import PageLayout from "@layouts/PageLayout.astro";
 
 export const prerender = false;
 
@@ -10,11 +12,14 @@ const session = await auth.api.getSession({
 if (!session) {
 	return Astro.redirect("/");
 }
+const seo = {
+	title: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",
+	description: "Καταγράψτε τις ψαρευτικές σας εμπειρίες",
+	keywords: "fishing, ψάρεμα, fishing journal",
+};
 ---
 
-<script>
-	const { authClient } = await import("../client-libs/auth");
-	const ep = await authClient.getSession();
-	console.log("!! ", ep);
-</script>
-<h1>You made it {session?.user.name} !</h1>
+<PageLayout seo={seo}>
+	<Calendar2 />
+	<h1>You made it {session?.user.name} !</h1>
+</PageLayout>

@@ -7,7 +7,7 @@ import { getEmailService } from "@libs/services/services";
 
 export const auth = betterAuth({
 	database: new Database("./auth.sqlite"),
-	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:4321",
+	baseURL: import.meta.env.BETTER_AUTH_URL || "http://localhost:4321",
 	account: {
 		accountLinking: {
 			enabled: true,
@@ -15,11 +15,17 @@ export const auth = betterAuth({
 		},
 	},
 	emailAndPassword: {
-		enabled: true,
+		enabled: false,
+		disableSignUp: true,
+		requireEmailVerification: true,
+		minPasswordLength: 8,
+		maxPasswordLength: 128,
+		autoSignIn: true,
 	},
 	emailVerification: {
 		sendOnSignUp: true,
 		sendVerificationEmail: async ({ user, url, token }, request) => {
+			// console.log(`Sending verification email to ${user.email}: ${url}`);
 			await getEmailService().sendEmail({
 				name: user.name,
 				email: user.email,
@@ -29,13 +35,9 @@ export const auth = betterAuth({
 		},
 	},
 	socialProviders: {
-		google: {
-			clientId: process.env.GOOGLE_CLIENT_ID || "",
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-		},
 		github: {
-			clientId: process.env.GITHUB_CLIENT_ID || "",
-			clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+			clientId: import.meta.env.GITHUB_CLIENT_ID || "",
+			clientSecret: import.meta.env.GITHUB_CLIENT_SECRET || "",
 		},
 	},
 	plugins: [
@@ -43,7 +45,7 @@ export const auth = betterAuth({
 		twoFactor({
 			otpOptions: {
 				async sendOTP(user, otp) {
-					console.log(`Sending OTP to ${user.email}: ${otp}`);
+					console.log(`Sending OTP to ${(user as any).email}: ${otp}`);
 					// await resend.emails.send({
 					// 	from: "Acme <no-reply@demo.better-auth.com>",
 					// 	to: user.email,

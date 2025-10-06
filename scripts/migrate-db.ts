@@ -59,6 +59,7 @@ try {
 			refreshToken TEXT,
 			expiresAt INTEGER,
 			password TEXT,
+			scope TEXT,
 			createdAt INTEGER NOT NULL,
 			updatedAt INTEGER NOT NULL,
 			FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE

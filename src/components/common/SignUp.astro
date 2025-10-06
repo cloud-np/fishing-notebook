@@ -1,0 +1,127 @@
+---
+
+---
+
+<form id="signup-form" class="hidden space-y-6">
+	<div>
+		<label for="signup-name" class="mb-2 block text-sm font-medium text-gray-300">Όνομα</label>
+		<input
+			type="text"
+			id="signup-name"
+			name="name"
+			required
+			minlength="2"
+			class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-gray-200 transition-shadow focus:border-transparent focus:ring-2 focus:ring-blue-500"
+			placeholder="Το όνομά σας"
+		/>
+	</div>
+
+	<div>
+		<label for="signup-email" class="mb-2 block text-sm font-medium text-gray-300">Email</label>
+		<input
+			type="email"
+			id="signup-email"
+			name="email"
+			required
+			class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-gray-200 transition-shadow focus:border-transparent focus:ring-2 focus:ring-blue-500"
+			placeholder="your@email.com"
+		/>
+	</div>
+
+	<div>
+		<label for="signup-password" class="mb-2 block text-sm font-medium text-gray-300">
+			Κωδικός (τουλάχιστον 8 χαρακτήρες)
+		</label>
+		<input
+			type="password"
+			id="signup-password"
+			name="password"
+			required
+			minlength="8"
+			class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-gray-200 transition-shadow focus:border-transparent focus:ring-2 focus:ring-blue-500"
+			placeholder="********"
+		/>
+	</div>
+
+	<button
+		type="submit"
+		id="signup-btn"
+		disabled
+		class="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-600">
+		<!-- Εγγραφή -->
+		Sign Up
+	</button>
+</form>
+
+<!-- Messages -->
+<div
+	id="error-message"
+	class="mt-4 hidden rounded-lg border border-red-800 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+</div>
+
+<div
+	id="success-message"
+	class="mt-4 hidden rounded-lg border border-green-800 bg-green-900/30 px-4 py-3 text-sm text-green-300">
+</div>
+
+<script>
+	const { signUp } = await import("../../client-libs/auth");
+	// Placeholder for now
+	// const signUp = { email: (...args: any[]) => ({ ...args }) as any };
+
+	// Tab switching
+	const signupForm = document.getElementById("signup-form") as HTMLFormElement;
+	const errorMessage = document.getElementById("error-message") as HTMLDivElement;
+	const successMessage = document.getElementById("success-message") as HTMLDivElement;
+	// Sign Up Handler
+	const signupBtn = document.getElementById("signup-btn") as HTMLButtonElement;
+	signupForm.addEventListener("submit", async e => {
+		e.preventDefault();
+
+		errorMessage.classList.add("hidden");
+		successMessage.classList.add("hidden");
+
+		signupBtn.disabled = true;
+		signupBtn.textContent = "Loading...";
+
+		try {
+			const formData = new FormData(signupForm);
+			const email = formData.get("email");
+			const password = formData.get("password");
+			const name = formData.get("name");
+			const image = formData.get("image");
+			const { data, error } = await signUp.email(
+				{
+					email: `${email ?? ""}`,
+					password: `${password ?? ""}`, // user password -> min 8 characters by default
+					name: `${name ?? ""}`, // user display name
+					image: `${image ?? ""}`, // User image URL (optional)
+				},
+				{
+					onRequest: ctx => {
+						//show loading
+						signupBtn.textContent = "Loading...";
+					},
+					onSuccess: ctx => {
+						successMessage.textContent = "Επιτυχής εγγραφή! Ανακατεύθυνση...";
+						successMessage.classList.remove("hidden");
+
+						setTimeout(() => {
+							window.location.href = "/dashboard";
+						}, 1500);
+					},
+					onError: ctx => {
+						// display the error message
+						errorMessage.textContent = ctx.error.message + "eeeee " || "Error during sign up";
+					},
+				}
+			);
+		} catch (error: any) {
+			errorMessage.textContent = error.message || "Error during sign up";
+			errorMessage.classList.remove("hidden");
+
+			signupBtn.disabled = false;
+			signupBtn.textContent = "Εγγραφή";
+		}
+	});
+</script>
