@@ -1,40 +1,52 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
+import { createAuthorizedHandler } from "src/actions/auth";
+import { dateSchema } from "./calendar.validation";
+import { fetchWeatherData, shouldFetchWeatherBasedOnPosition } from "./weather";
+
+let lastFetchedPosition: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
 
 export const calendar = {
-	sendEmail: defineAction({
-		accept: "form",
-		input: contactFormSchema,
-		handler: async (input, context) => {
+	fetchDay: defineAction({
+		accept: "json",
+		input: dateSchema,
+		handler: createAuthorizedHandler(async (input, context) => {
+			console.log("Checking date:", input.date);
+			const { date, latitude, longitude } = input;
 			try {
-				// Run anti-spam validation
-				const validation = new ContactAntiSpam(input, context).validateAntiSpam();
+				// Example coordinates (you'll need to get these from the location)
 
-				// If honeypot was triggered, return fake success
-				if (validation.honeypot) {
-					return { success: true, message: "Thank you for your message!" };
-				}
-
-				await getEmailService().sendEmail({
-					email: input.email,
-					html: input.message,
-					subject: `Νέο μήνυμα από ${input.name}`,
-					name: input.name,
-				});
+				// We don't need to check if its the same day being fetched
+				// since if the user doesn't change the position we won't fetch anyway.
+				// In the case he switches the position we will fetch again anyway.
+				// if (
+				// 	!shouldFetchWeatherBasedOnPosition(
+				// 		latitude,
+				// 		longitude,
+				// 		lastFetchedPosition.latitude,
+				// 		lastFetchedPosition.longitude
+				// 	)
+				// ) {
+				// 	// TODO: Should return object from the DB.
+				// 	return {
+				// 		success: true,
+				// 		date: input.date,
+				// 		weather: null,
+				// 	};
+				// }
+				const weatherData = await fetchWeatherData(latitude, longitude, input.date);
+				lastFetchedPosition = { latitude, longitude };
 
 				return {
 					success: true,
-					message: "Thank you for your message! We'll get back to you soon.",
+					date: input.date,
+					weather: weatherData,
 				};
 			} catch (error) {
-				if (error instanceof ActionError) {
-					throw error;
-				}
-
 				throw new ActionError({
 					code: "INTERNAL_SERVER_ERROR",
-					message: "Failed to send message",
+					message: "Failed to fetch weather data",
 				});
 			}
-		},
+		}),
 	}),
 };

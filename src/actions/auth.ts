@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { passkey } from "better-auth/plugins/passkey";
 import { twoFactor } from "better-auth/plugins";
-import { createAuthMiddleware } from "better-auth/api";
 import Database from "better-sqlite3";
 import { getEmailService } from "@libs/services/services";
+import { ActionError } from "astro:actions";
 
 export const auth = betterAuth({
 	database: new Database("./auth.sqlite"),
@@ -60,3 +60,22 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 });
+
+export const createAuthorizedHandler = <TInput, TOutput>(
+	handler: (input: TInput, context: any) => Promise<TOutput>
+) => {
+	return async (input: TInput, context: any) => {
+		const session = await auth.api.getSession({
+			headers: context.request.headers,
+		});
+
+		if (!session) {
+			throw new ActionError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to perform this action",
+			});
+		}
+
+		return handler(input, context);
+	};
+};
