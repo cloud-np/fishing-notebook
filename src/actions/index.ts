@@ -1,5 +1,6 @@
 import { getEmailService } from "@libs/services/services";
 import { contact } from "./contact/contact";
+import { calendar } from "./calendar/calendar";
 import { getRateLimiter, getDuplicateDetector } from "src/actions/contact/middlewares";
 
 // TODO: We need a better pattern for this
@@ -13,4 +14,5 @@ getEmailService();
 
 export const server = {
 	contact,
+	calendar,
 };

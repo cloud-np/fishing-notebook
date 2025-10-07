@@ -29,6 +29,9 @@ importers:
       '@astrojs/ts-plugin':
         specifier: ^1.10.4
         version: 1.10.4
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@playform/compress':
         specifier: ^0.2.0
         version: 0.2.0(@types/node@24.6.2)(jiti@2.6.1)(rollup@4.52.4)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
@@ -47,6 +50,9 @@ importers:
       bindings:
         specifier: ^1.5.0
         version: 1.5.0
+      bits-ui:
+        specifier: ^2.11.4
+        version: 2.11.4(@internationalized/date@3.10.0)(svelte@5.39.8)
       mdast-util-to-string:
         specifier: ^4.0.0
         version: 4.0.0
@@ -68,6 +74,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.14
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@4.1.14)
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
@@ -84,6 +93,9 @@ importers:
       astro-icon:
         specifier: ^1.1.5
         version: 1.1.5
+      phosphor-svelte:
+        specifier: ^3.0.1
+        version: 3.0.1(svelte@5.39.8)(vite@6.3.6(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.6)(yaml@2.8.1))
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -505,6 +517,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@floating-ui/core@1.7.3':
+    resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
+
+  '@floating-ui/dom@1.7.4':
+    resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
+
+  '@floating-ui/utils@0.2.10':
+    resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
 
@@ -761,6 +782,9 @@ packages:
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [win32]
+
+  '@internationalized/date@3.10.0':
+    resolution: {integrity: sha512-oxDR/NTEJ1k+UFVQElaNIk65E/Z83HK1z1WI3lQyhTtnNg4R5oVXaPzK3jcpKG8UHKDVuDQHzn+wsxSz8RP3aw==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -1511,6 +1535,13 @@ packages:
 
   bindings@1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
+
+  bits-ui@2.11.4:
+    resolution: {integrity: sha512-OlVBJhNUMDHbIAf8oDAyPchIrU8b1S5NAMm6enMZSKx5HKcf/QPI485/BL1r4EPlv4O3m45e59hBRCETtYFdxg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@internationalized/date': ^3.8.1
+      svelte: ^5.33.0
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -2707,6 +2738,15 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
+  phosphor-svelte@3.0.1:
+    resolution: {integrity: sha512-QuxdzWCBjNZXglk4XpmaKb+JRA6XgKOYWpBY8k82NZwxO5ec7u2iFuueAijKYgj/7hLWHtreAPc2Q5uZFNTRSQ==}
+    peerDependencies:
+      svelte: ^5.0.0 || ^5.0.0-next.96
+      vite: '>=5'
+    peerDependenciesMeta:
+      vite:
+        optional: true
+
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -2983,6 +3023,16 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  runed@0.29.2:
+    resolution: {integrity: sha512-0cq6cA6sYGZwl/FvVqjx9YN+1xEBu9sDDyuWdDW1yWX7JF2wmvmVKfH+hVCZs+csW+P3ARH92MjI3H9QTagOQA==}
+    peerDependencies:
+      svelte: ^5.7.0
+
+  runed@0.31.1:
+    resolution: {integrity: sha512-v3czcTnO+EJjiPvD4dwIqfTdHLZ8oH0zJheKqAHh9QMViY7Qb29UlAMRpX7ZtHh7AFqV60KmfxaJ9QMy+L1igQ==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   s.color@0.0.15:
     resolution: {integrity: sha512-AUNrbEUHeKY8XsYr/DYpl+qk5+aM+DChopnWOPEzn8YKzOhv4l2zH6LzZms3tOZP3wwdOyc0RmTciyi46HLIuA==}
 
@@ -3118,6 +3168,12 @@ packages:
   suf-log@2.5.3:
     resolution: {integrity: sha512-KvC8OPjzdNOe+xQ4XWJV2whQA0aM1kGVczMQ8+dStAO6KfEB140JEVQ9dE76ONZ0/Ylf67ni4tILPJB41U0eow==}
 
+  svelte-toolbelt@0.10.5:
+    resolution: {integrity: sha512-8e+eWTgxw1aiLxhDE8Rb1X6AoLitqpJz+WhAul2W7W58C8KoLoJQf1TgQdFPBiCPJ0Jg5y0Zi1uyua9em4VS0w==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.30.2
+
   svelte2tsx@0.7.44:
     resolution: {integrity: sha512-opuH+bCboss0/ncxnfAO+qt0IAprxc8OqwuC7otafWeO5CHjJ6UAAwvQmu/+xjpCSarX8pQKydXQuoJmbCDcTg==}
     peerDependencies:
@@ -3132,6 +3188,14 @@ packages:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
+
+  tabbable@6.2.0:
+    resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
+
+  tailwindcss-animate@1.0.7:
+    resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
 
   tailwindcss@4.1.14:
     resolution: {integrity: sha512-b7pCxjGO98LnxVkKjaZSDeNuljC4ueKUddjENJOADtubtdo8llTaJy7HwBMeLNSSo2N5QIAgklslK1+Ir8r6CA==}
@@ -4319,6 +4383,17 @@ snapshots:
   '@esbuild/win32-x64@0.25.10':
     optional: true
 
+  '@floating-ui/core@1.7.3':
+    dependencies:
+      '@floating-ui/utils': 0.2.10
+
+  '@floating-ui/dom@1.7.4':
+    dependencies:
+      '@floating-ui/core': 1.7.3
+      '@floating-ui/utils': 0.2.10
+
+  '@floating-ui/utils@0.2.10': {}
+
   '@hexagon/base64@1.1.28': {}
 
   '@iconify-json/mdi@1.2.3':
@@ -4525,6 +4600,10 @@ snapshots:
 
   '@img/sharp-win32-x64@0.34.4':
     optional: true
+
+  '@internationalized/date@3.10.0':
+    dependencies:
+      '@swc/helpers': 0.5.17
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
@@ -5593,6 +5672,17 @@ snapshots:
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
+
+  bits-ui@2.11.4(@internationalized/date@3.10.0)(svelte@5.39.8):
+    dependencies:
+      '@floating-ui/core': 1.7.3
+      '@floating-ui/dom': 1.7.4
+      '@internationalized/date': 3.10.0
+      esm-env: 1.2.2
+      runed: 0.31.1(svelte@5.39.8)
+      svelte: 5.39.8
+      svelte-toolbelt: 0.10.5(svelte@5.39.8)
+      tabbable: 6.2.0
 
   bl@4.1.0:
     dependencies:
@@ -7117,6 +7207,14 @@ snapshots:
 
   pend@1.2.0: {}
 
+  phosphor-svelte@3.0.1(svelte@5.39.8)(vite@6.3.6(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.6)(yaml@2.8.1)):
+    dependencies:
+      estree-walker: 3.0.3
+      magic-string: 0.30.19
+      svelte: 5.39.8
+    optionalDependencies:
+      vite: 6.3.6(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.6)(yaml@2.8.1)
+
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -7421,6 +7519,16 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  runed@0.29.2(svelte@5.39.8):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.39.8
+
+  runed@0.31.1(svelte@5.39.8):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.39.8
+
   s.color@0.0.15: {}
 
   safe-buffer@5.2.1: {}
@@ -7614,6 +7722,13 @@ snapshots:
     dependencies:
       s.color: 0.0.15
 
+  svelte-toolbelt@0.10.5(svelte@5.39.8):
+    dependencies:
+      clsx: 2.1.1
+      runed: 0.29.2(svelte@5.39.8)
+      style-to-object: 1.0.9
+      svelte: 5.39.8
+
   svelte2tsx@0.7.44(svelte@5.39.8)(typescript@5.9.3):
     dependencies:
       dedent-js: 1.0.1
@@ -7647,6 +7762,12 @@ snapshots:
       css-what: 6.2.2
       csso: 5.0.5
       picocolors: 1.1.1
+
+  tabbable@6.2.0: {}
+
+  tailwindcss-animate@1.0.7(tailwindcss@4.1.14):
+    dependencies:
+      tailwindcss: 4.1.14
 
   tailwindcss@4.1.14: {}
 
