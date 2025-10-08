@@ -1,7 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { createAuthorizedHandler } from "src/actions/auth";
 import { dateSchema } from "./calendar.validation";
-import { fetchWeatherData, shouldFetchWeatherBasedOnPosition } from "./weather";
 
 let lastFetchedPosition: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
 
@@ -33,13 +32,14 @@ export const calendar = {
 				// 		weather: null,
 				// 	};
 				// }
-				const weatherData = await fetchWeatherData(latitude, longitude, input.date);
+				// const weatherData = await fetchWeatherData(latitude, longitude, input.date);
 				lastFetchedPosition = { latitude, longitude };
 
 				return {
 					success: true,
 					date: input.date,
-					weather: weatherData,
+					// weather: weatherData,
+					weather: null,
 				};
 			} catch (error) {
 				throw new ActionError({

@@ -1,4 +1,4 @@
-import { getEmailService } from "@libs/services/services";
+import { getEmailService } from "@libs/services";
 import { contact } from "./contact/contact";
 import { calendar } from "./calendar/calendar";
 import { getRateLimiter, getDuplicateDetector } from "src/actions/contact/middlewares";

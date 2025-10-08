@@ -1,7 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { ContactAntiSpam } from "src/actions/contact/contact-anti-spam";
 import { contactFormSchema } from "src/actions/contact/contact.validation";
-import { getEmailService } from "@libs/services/services";
+import { getEmailService } from "@libs/services";
 
 export const contact = {
 	sendEmail: defineAction({
@@ -14,31 +14,30 @@ export const contact = {
 
 				// If honeypot was triggered, return fake success
 				if (validation.honeypot) {
-					return { success: true, message: 'Thank you for your message!' };
+					return { success: true, message: "Thank you for your message!" };
 				}
 
 				await getEmailService().sendEmail({
 					email: input.email,
 					html: input.message,
 					subject: `Νέο μήνυμα από ${input.name}`,
-					name: input.name
+					name: input.name,
 				});
 
 				return {
 					success: true,
-					message: 'Thank you for your message! We\'ll get back to you soon.'
+					message: "Thank you for your message! We'll get back to you soon.",
 				};
-
 			} catch (error) {
 				if (error instanceof ActionError) {
 					throw error;
 				}
 
 				throw new ActionError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: 'Failed to send message'
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to send message",
 				});
 			}
-		}
+		},
 	}),
 };

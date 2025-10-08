@@ -8,7 +8,10 @@
         "build": "astro check && astro build",
         "preview": "astro preview",
         "astro": "astro",
-        "db:migrate": "tsx scripts/migrate-db.ts"
+        "db:migrate": "tsx scripts/migrate-db.ts",
+        "db:generate": "drizzle-kit generate",
+        "db:push": "drizzle-kit push",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
         "@astrojs/check": "^0.9.4",
@@ -19,6 +22,7 @@
         "@astrojs/svelte": "^7.1.0",
         "@astrojs/ts-plugin": "^1.10.4",
         "@internationalized/date": "^3.10.0",
+        "@libsql/client": "^0.15.15",
         "@playform/compress": "^0.2.0",
         "@tailwindcss/vite": "^4.1.11",
         "astro": "^5.11.0",
@@ -26,6 +30,8 @@
         "better-sqlite3": "^12.4.1",
         "bindings": "^1.5.0",
         "bits-ui": "^2.11.4",
+        "dotenv": "^17.2.3",
+        "drizzle-orm": "^0.44.6",
         "mdast-util-to-string": "^4.0.0",
         "nodemailer": "^7.0.5",
         "openmeteo": "^1.2.1",
@@ -43,6 +49,7 @@
         "@types/better-sqlite3": "^7.6.13",
         "@types/nodemailer": "^7.0.2",
         "astro-icon": "^1.1.5",
+        "drizzle-kit": "^0.31.5",
         "phosphor-svelte": "^3.0.1",
         "prettier": "^3.6.2",
         "prettier-plugin-astro": "^0.14.1",

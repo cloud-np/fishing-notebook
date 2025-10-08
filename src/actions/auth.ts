@@ -1,12 +1,22 @@
 import { betterAuth } from "better-auth";
 import { passkey } from "better-auth/plugins/passkey";
 import { twoFactor } from "better-auth/plugins";
-import Database from "better-sqlite3";
-import { getEmailService } from "@libs/services/services";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db, sqlite } from "@/db";
+import * as schema from "@/db/schema";
+import { getEmailService } from "@libs/services";
 import { ActionError } from "astro:actions";
 
 export const auth = betterAuth({
-	database: new Database("./auth.sqlite"),
+	database: drizzleAdapter(db, {
+		provider: "sqlite",
+		schema: {
+			user: schema.user,
+			session: schema.session,
+			account: schema.account,
+			verification: schema.verification,
+		},
+	}),
 	baseURL: import.meta.env.BETTER_AUTH_URL || "http://localhost:4321",
 	account: {
 		accountLinking: {
