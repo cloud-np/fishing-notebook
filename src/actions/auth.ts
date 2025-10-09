@@ -2,8 +2,8 @@ import { betterAuth } from "better-auth";
 import { passkey } from "better-auth/plugins/passkey";
 import { twoFactor } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db, sqlite } from "@/db";
-import * as schema from "@/db/schema";
+import { db } from "@db/index";
+import * as schema from "@db/schema";
 import { getEmailService } from "@libs/services";
 import { ActionError } from "astro:actions";
 

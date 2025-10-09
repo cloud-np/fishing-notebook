@@ -1,7 +1,7 @@
 ---
 import { auth } from "src/actions/auth";
-import Calendar from "@components/interactive/Calendar/Calendar.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
+import Trip from "@components/interactive/Trip/Trip.svelte";
 
 export const prerender = false;
 
@@ -20,8 +20,6 @@ const seo = {
 ---
 
 <PageLayout seo={seo}>
-	<div class="flex justify-center">
-		<Calendar client:load />
-	</div>
+	<Trip client:load />
 	<h1>You made it {session?.user.name} !</h1>
 </PageLayout>

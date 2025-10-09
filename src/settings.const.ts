@@ -39,23 +39,7 @@ export const settings = {
 			],
 		},
 		contact: {
-			phone: "+30 6988550186",
 			email: "info@fishing-notebook.gr",
-			address: {
-				street: {
-					el: "Λεωφόρος Ποσειδώνος 25",
-					en: "Poseidonos Avenue 25",
-				},
-				city: {
-					el: "Αθήνα",
-					en: "Athens",
-				},
-				postalCode: "17562",
-				country: {
-					el: "Ελλάδα",
-					en: "Greece",
-				},
-			},
 		},
 		social: {
 			facebook: "https://www.facebook.com/fishingnotebookgr",
@@ -64,18 +48,6 @@ export const settings = {
 			tiktok: "https://www.tiktok.com/@fishingnotebookgr",
 			youtube: "https://www.youtube.com/@fishingnotebookgr",
 			twitter: "https://www.twitter.com/fishingnotebookgr",
-		},
-		hours: {
-			monday: "24/7",
-			tuesday: "24/7",
-			wednesday: "24/7",
-			thursday: "24/7",
-			friday: "24/7",
-			saturday: "24/7",
-			sunday: {
-				el: "24/7",
-				en: "24/7",
-			},
 		},
 	},
 };

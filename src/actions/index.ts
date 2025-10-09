@@ -1,6 +1,7 @@
 import { getEmailService } from "@libs/services";
 import { contact } from "./contact/contact";
 import { calendar } from "./calendar/calendar";
+import { maps } from "./maps/maps";
 import { getRateLimiter, getDuplicateDetector } from "src/actions/contact/middlewares";
 
 // TODO: We need a better pattern for this
@@ -15,4 +16,5 @@ getEmailService();
 export const server = {
 	contact,
 	calendar,
+	maps,
 };

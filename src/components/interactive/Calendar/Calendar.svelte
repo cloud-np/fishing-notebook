@@ -24,16 +24,13 @@
 	});
 
 	const buttonClasses = "rounded-9px bg-background-alt hover:bg-muted inline-flex size-10 items-center justify-center active:scale-[0.98]";
-	const sizing = "size-10 md:size-[6vw] md:text-[2vw]";
+	const sizing = "size-10 md:size-[6vw] md:text-[2vw] lg:size-25 lg:text-xl";
 	const handleMonthChange = async (isNext: boolean) => {
 		// const currentDate = isNext ? value.add({ months: 1 }) : value.subtract({ months: 1 });
 		// value = currentDate;
 	}
 </script>
 
-<button class={buttonClasses} onclick={() =>console.log()}>
-	Heelo
-</button>
 <Calendar.Root
 	class="border-dark-10 bg-background-alt shadow-card mt-6 rounded-[15px] border p-[22px]"
 	weekdayFormat="short"
@@ -46,7 +43,7 @@
 		<Calendar.PrevButton class={buttonClasses} onclick={() => handleMonthChange(false)}>
 			<CaretLeft class="size-6" />
 		</Calendar.PrevButton>
-		<Calendar.Heading class="text-[2.5vw] font-medium" />
+		<Calendar.Heading class="text-[2.5vw] lg:text-3xl font-medium" />
 		<Calendar.NextButton class={buttonClasses} onclick={() => handleMonthChange(true)}>
 			<CaretRight class="size-6" />
 		</Calendar.NextButton>
@@ -74,7 +71,7 @@
 										"group relative inline-flex size-10 items-center justify-center whitespace-nowrap border border-transparent bg-transparent p-0 text-sm font-normal", sizing
 										)}
 									>
-										<div class="bg-foreground group-data-selected:bg-background group-data-today:block absolute top-[5px] hidden size-[1vw] rounded-full"></div>
+										<div class="bg-foreground group-data-selected:bg-background group-data-today:block absolute top-[5px] hidden size-[1vw] lg:size-3 rounded-full"></div>
 										{date.day}
 									</Calendar.Day>
 								</Calendar.Cell>
