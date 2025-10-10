@@ -20,6 +20,8 @@ const seo = {
 ---
 
 <PageLayout seo={seo}>
-	<Trip client:load />
-	<h1>You made it {session?.user.name} !</h1>
+	<div class="flex flex-col items-center justify-center gap-8">
+		<h1 class="text-2xl font-bold">You made it {session?.user.name} !</h1>
+		<Trip client:load />
+	</div>
 </PageLayout>

@@ -17,7 +17,6 @@
 	const { latitude, longitude } = location;
 
 	function handleMarkerPlace(lat: number, lng: number) {
-		console.log(`Marker placed at: ${lat}, ${lng}`);
 		if (onMarkerPlace) {
 			onMarkerPlace(lat, lng);
 		}
@@ -28,7 +27,7 @@
 
 <style>
 	.map-container {
-		width: 50dvw;
-		height: 30dvh;
+		width: 100%;
+		height: 100%;
 	}
 </style>

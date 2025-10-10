@@ -4,6 +4,7 @@
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import { actions } from "astro:actions";
 	import { Popover, Button } from "bits-ui";
+	import { userValueToPosition } from "@utils/helpers";
 	import MapPin from "phosphor-svelte/lib/MapPin";
 
 	// Form state
@@ -55,6 +56,18 @@
 		longitude = lng;
 	}
 
+	function handlePaste(event: ClipboardEvent) {
+		let parsedValue = userValueToPosition(event?.clipboardData?.getData('text/plain'));
+		if (!parsedValue) return;
+
+		// Kinda hacky, we wait for the input from the user to be processed
+		// then we set the values in an async manner.
+		setTimeout(() => {
+			latitude = parsedValue[0];
+			longitude = parsedValue[1];
+		}, 0);
+	}
+
 	// Handle form submission
 	function handleSubmit(event: Event) {
 		event.preventDefault();
@@ -67,6 +80,7 @@
 		console.log("Trip data:", tripData);
 		// TODO: Submit to server/action
 	}
+	const inputClasses = "rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex w-full items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm";
 </script>
 
 <div class="trip-form-container">
@@ -91,7 +105,7 @@
 						type="text"
 						bind:value={mapsUrl}
 						placeholder="Paste Google Maps share link (e.g., https://maps.app.goo.gl/...)"
-						class="maps-url-input"
+						class={inputClasses}
 					/>
 					<button
 						type="button"
@@ -110,19 +124,18 @@
 			<div class="divider">
 				<span>OR</span>
 			</div>
-
 			<!-- Manual Coordinate Inputs -->
-
 			<Popover.Root bind:open={isMapOpen}>
 				<div class="flex gap-4">
 					<div class="flex gap-4">
 						<div class="flex flex-col gap-2">
 							<label for="latitude">Latitude</label>
 							<input
-								id="latitude"
 								type="number"
 								step="any"
 								bind:value={latitude}
+								onpaste={handlePaste}
+								class={inputClasses}
 								placeholder="e.g., 37.977217"
 							/>
 						</div>
@@ -130,10 +143,10 @@
 						<div class="flex flex-col gap-2">
 							<label for="longitude">Longitude</label>
 							<input
-								id="longitude"
 								type="number"
 								step="any"
 								bind:value={longitude}
+								class={inputClasses}
 								placeholder="e.g., 23.730278"
 							/>
 						</div>
@@ -152,7 +165,7 @@
 					class="popover-map-content"
 					sideOffset={8}
 				>
-					<div class="map-wrapper">
+					<div class="w-full h-full">
 						<Map
 							location={{ latitude, longitude }}
 							zoom={9}
@@ -177,6 +190,7 @@
 				bind:value={tripNotes}
 				placeholder="Add notes about your fishing trip..."
 				rows="4"
+				class="rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex w-full items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm" name="name"
 			></textarea>
 		</section>
 
@@ -229,22 +243,6 @@
 		border-radius: 0.75rem;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 		margin-top: 0.5rem;
-	}
-
-	input[type="number"],
-	textarea {
-		padding: 0.75rem;
-		border: 1px solid #ccc;
-		border-radius: 0.5rem;
-		font-size: 1rem;
-		background: var(--background-alt, #f9f9f9);
-	}
-
-	input[type="number"]:focus,
-	textarea:focus {
-		outline: none;
-		border-color: #4a90e2;
-		box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 	}
 
 	.help-text {
@@ -335,23 +333,14 @@
 
 	:global(.popover-map-content) {
 		z-index: 50;
-		background: white;
+		background: #242424;
 		border-radius: 0.75rem;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-		border: 1px solid #e5e7eb;
 		padding: 1rem;
 		max-width: 90vw;
 		width: 600px;
-	}
-
-	.map-wrapper {
-		width: 100%;
 		min-height: 400px;
-	}
-
-	textarea {
-		resize: vertical;
-		font-family: inherit;
+		height: min(400px, 10dvh);
 	}
 
 	.submit-button {
@@ -372,15 +361,5 @@
 
 	.submit-button:active {
 		transform: scale(0.98);
-	}
-
-	@media (max-width: 768px) {
-		.location-inputs {
-			grid-template-columns: 1fr;
-		}
-
-		.trip-form-container {
-			padding: 1rem;
-		}
 	}
 </style>
