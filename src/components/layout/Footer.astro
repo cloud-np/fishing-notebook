@@ -6,9 +6,10 @@ import ContactInfo from "@components/common/ContactInfo.astro";
 ---
 
 <footer class="mt-auto flex min-h-50 flex-col justify-center px-8 pt-16 md:justify-between">
-	<div class="flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
-		<div class="mb-4 flex flex-col items-center text-base">
-			<Logo width={150} />
+	<!-- Gets overriden from from add-trip flex-start look into -->
+	<div class="specificty flex flex-col justify-between gap-4 md:flex-row md:items-start">
+		<div class="mb-4 flex flex-col items-center gap-4 text-base">
+			<Logo width={60} />
 			<p>&copy; {new Date().getFullYear()} {settings.name}</p>
 			<div class="-ml-3 pt-1">
 				<SocialList />
@@ -24,5 +25,9 @@ import ContactInfo from "@components/common/ContactInfo.astro";
 	footer {
 		background-color: var(--c-bg_dark);
 		color: var(--c-text_light);
+	}
+
+	.specificty {
+		align-items: center;
 	}
 </style>
