@@ -8,7 +8,7 @@
 		markerMarkup = "",
 		onMarkerPlace,
 	}: {
-		location: { latitude: number; longitude: number };
+		location: { latitude?: number; longitude?: number };
 		zoom: number;
 		markerMarkup: string;
 		onMarkerPlace?: (lat: number, lng: number) => void;
@@ -23,7 +23,13 @@
 	}
  </script>
 
-<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace }} ></figure>
+{#if latitude && longitude}
+	<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace }} ></figure>
+{:else}
+	<div class="flex items-center justify-center h-full">
+		<h1 class="text-2xl">Please add a location..</h1>
+	</div>
+{/if}
 
 <style>
 	.map-container {

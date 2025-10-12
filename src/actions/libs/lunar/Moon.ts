@@ -112,13 +112,7 @@ export class Moon {
 			...options,
 		};
 
-		let emoji;
-
-		if (hemisphere === Hemisphere.SOUTHERN) {
-			emoji = SouthernHemisphereLunarEmoji;
-		} else {
-			emoji = NorthernHemisphereLunarEmoji;
-		}
+		const emoji = hemisphere === Hemisphere.SOUTHERN ? SouthernHemisphereLunarEmoji : NorthernHemisphereLunarEmoji;
 
 		switch (phase) {
 			case LunarPhase.WANING_CRESCENT:

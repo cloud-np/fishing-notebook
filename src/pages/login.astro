@@ -1,12 +1,8 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
-import { Icon } from "astro-icon/components";
 import "../styles/index.css";
-import { useTranslations } from "../i18n/utils";
 import SignUp from "@components/common/SignUp.astro";
-import Login from "@components/common/Login.astro";
-
-const t = useTranslations("en");
+import LoginForm from "@components/common/LoginForm.astro";
 
 const seo = {
 	title: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",
@@ -47,7 +43,7 @@ const seo = {
 
 				<!-- Tab Content -->
 				<div class="p-8">
-					<Login />
+					<LoginForm />
 
 					<!-- Sign Up Form -->
 					<SignUp />

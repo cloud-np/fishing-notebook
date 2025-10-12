@@ -87,7 +87,10 @@ export const locations = sqliteTable("locations", {
 	latitude: real("latitude").notNull(),
 	longitude: real("longitude").notNull(),
 	description: text("description"),
-	waterType: text("water_type", { enum: ["freshwater", "saltwater", "brackish"] }),
+	waterType: text("water_type", { enum: ["freshwater", "saltwater", "brackish"] }).default("saltwater"),
+	rating: integer("rating"),
+	carDifficulty: integer("car_difficulty"),
+	walkDifficulty: integer("walk_difficulty"),
 	createdAt: integer("created_at", { mode: "timestamp" })
 		.notNull()
 		.default(sql`(unixepoch())`),
@@ -107,11 +110,7 @@ export const fishingTrips = sqliteTable("fishing_trips", {
 	endTime: text("end_time"),
 	title: text("title"),
 	notes: text("notes"),
-	waterClarity: text("water_clarity", { enum: ["clear", "stained", "murky", "muddy"] }),
-	waterTemperature: real("water_temperature"),
-	tideStage: text("tide_stage", { enum: ["high", "low", "rising", "falling"] }),
-	moonPhase: text("moon_phase"),
-	successRating: integer("success_rating"),
+	rating: integer("rating"),
 	createdAt: integer("created_at", { mode: "timestamp" })
 		.notNull()
 		.default(sql`(unixepoch())`),

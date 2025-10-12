@@ -1,0 +1,18 @@
+---
+import Trip from "@components/interactive/Trip/Trip.svelte";
+import PageLayout from "@layouts/PageLayout.astro";
+
+export const prerender = false;
+
+const seo = {
+	title: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",
+	description: "Καταγράψτε τις ψαρευτικές σας εμπειρίες",
+	keywords: "fishing, ψάρεμα, fishing journal",
+};
+---
+
+<PageLayout seo={seo}>
+	<div class="flex flex-col items-center justify-center gap-8">
+		<Trip client:load />
+	</div>
+</PageLayout>

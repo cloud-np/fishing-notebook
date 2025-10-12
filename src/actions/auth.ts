@@ -72,7 +72,7 @@ export const auth = betterAuth({
 });
 
 export const createAuthorizedHandler = <TInput, TOutput>(
-	handler: (input: TInput, context: any) => Promise<TOutput>
+	handler: (input: TInput, context: any, session: any) => Promise<TOutput>
 ) => {
 	return async (input: TInput, context: any) => {
 		const session = await auth.api.getSession({
@@ -86,6 +86,6 @@ export const createAuthorizedHandler = <TInput, TOutput>(
 			});
 		}
 
-		return handler(input, context);
+		return handler(input, context, session);
 	};
 };

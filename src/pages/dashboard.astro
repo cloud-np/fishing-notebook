@@ -1,17 +1,20 @@
 ---
-import { auth } from "src/actions/auth";
 import PageLayout from "@layouts/PageLayout.astro";
-import Trip from "@components/interactive/Trip/Trip.svelte";
+import { Moon } from "@libs/lunar";
 
 export const prerender = false;
 
-const session = await auth.api.getSession({
-	headers: Astro.request.headers,
-});
+const date = new Date();
 
-if (!session) {
-	return Astro.redirect("/");
-}
+const age = Moon.lunarAge(date).toFixed(2);
+const agePercent = `${(Moon.lunarAgePercent(date) * 100).toFixed(2)}%`;
+const lunation = Moon.lunationNumber(date);
+const distance = Moon.lunarDistance(date).toFixed(2);
+const phase = Moon.lunarPhase(date);
+const phaseEmoji = Moon.lunarPhaseEmoji(date);
+const isWaxing = Moon.isWaxing(date);
+const isWaning = Moon.isWaning(date);
+
 const seo = {
 	title: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",
 	description: "Καταγράψτε τις ψαρευτικές σας εμπειρίες",
@@ -19,9 +22,4 @@ const seo = {
 };
 ---
 
-<PageLayout seo={seo}>
-	<div class="flex flex-col items-center justify-center gap-8">
-		<h1 class="text-2xl font-bold">You made it {session?.user.name} !</h1>
-		<Trip client:load />
-	</div>
-</PageLayout>
+<PageLayout seo={seo} />

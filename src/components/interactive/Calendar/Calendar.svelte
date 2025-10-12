@@ -1,27 +1,11 @@
 <script lang="ts">
 	import { Calendar } from "bits-ui";
-	import { actions } from "astro:actions";
 	import cn from "clsx";
 	import CaretLeft from "phosphor-svelte/lib/CaretLeft";
 	import CaretRight from "phosphor-svelte/lib/CaretRight";
 	import { getLocalTimeZone, today } from "@internationalized/date";
 
-	// let currentDate =
 	let value = $state(today(getLocalTimeZone()));
-	let lastMonthFetched: number | undefined;
-	let data: any = $state(undefined);
-
-	$effect(() => {
-		$inspect("Calendar value changed: ", value);
-		(async () => {
-			const ox = await actions.calendar.fetchDay({ date: value.toString(),
-				latitude: 37.9838, // Athens, Greece
-				longitude: 23.7275
-			});
-			console.log("edw: ", ox);
-			// await actions.calendar.fetchMonth({ date: value.toString() });
-		})();
-	});
 
 	const buttonClasses = "rounded-9px bg-background-alt hover:bg-muted inline-flex size-10 items-center justify-center active:scale-[0.98]";
 	const sizing = "size-10 md:size-[6vw] md:text-[2vw] lg:size-25 lg:text-xl";

@@ -34,7 +34,6 @@ export enum LunarMonth {
 
 /**
  * Timestamp epoch, January 1, 1970, in Julian Days.
- * @type {number}
  */
 export const EPOCH = 2440587.5;
 

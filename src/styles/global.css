@@ -235,6 +235,20 @@ input:-webkit-autofill:active {
 	--shadow-btn: 0px 1px 0px 1px rgba(0, 0, 0, 0.2);
 	--shadow-card: 0px 2px 0px 1px rgba(0, 0, 0, 0.4);
 	--shadow-date-field-focus: 0px 0px 0px 3px rgba(244, 244, 245, 0.1);
+
+	/* Target autofilled inputs */
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	input:-webkit-autofill:active {
+		-webkit-text-fill-color: #fff;
+		color: #fff;
+	}
+
+	/* For Firefox */
+	input:-moz-autofill {
+		color: #fff;
+	}
 }
 
 @theme inline {
