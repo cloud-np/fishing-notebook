@@ -1,7 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 import { auth } from "@auth";
 
-const PUBLIC_ROUTES: readonly string[] = ["/login"];
+const PUBLIC_ROUTES: readonly string[] = ["/login", "/api/auth"];
 
 export const authMiddleware = defineMiddleware(async (context, next) => {
 	// Whitelist: routes that don't require authentication

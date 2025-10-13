@@ -15,6 +15,13 @@
       "when": 1760361070845,
       "tag": "0001_crazy_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760384674413,
+      "tag": "0002_large_lorna_dane",
+      "breakpoints": true
     }
   ]
 }

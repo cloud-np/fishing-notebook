@@ -82,7 +82,7 @@ export const locations = sqliteTable(
 	"locations",
 	{
 		id: integer("id").primaryKey({ autoIncrement: true }),
-		userId: integer("user_id")
+		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 		name: text("name").notNull(),
@@ -107,7 +107,7 @@ export const locations = sqliteTable(
 
 export const fishingTrips = sqliteTable("fishing_trips", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	userId: integer("user_id")
+	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	locationId: integer("location_id").references(() => locations.id, { onDelete: "set null" }),
@@ -266,7 +266,7 @@ export const dailyWeather = sqliteTable("daily_weather", {
 
 export const equipment = sqliteTable("equipment", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	userId: integer("user_id")
+	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	type: text("type", { enum: ["rod", "reel", "line", "lure", "bait", "other"] }),
