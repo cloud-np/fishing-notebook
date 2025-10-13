@@ -101,7 +101,7 @@
 			<DatePicker bind:value={selectedDate} />
 		</section>
 
-		{#if !locationState.location.latitude || !locationState.location.longitude}
+		{#if (!locationState.location.latitude || !locationState.location.longitude) || isAddLocationOpen}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2">
 					<h1>Select Previous Location</h1>
@@ -153,7 +153,7 @@
 		{:else}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4">
-					{locationState.location.name}
+					{locationState.location.name ?? `Location at ${locationState.location.latitude.toFixed(4)}, ${locationState.location.longitude.toFixed(4)}`}
 				</div>
 			</section>
 		{/if}

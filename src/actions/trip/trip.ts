@@ -4,7 +4,6 @@ import { db } from "@db/index";
 import { fishingTrips } from "@db/schema";
 import { createAuthorizedHandler } from "src/actions/auth";
 import { eq } from "drizzle-orm";
-import { location } from "../location/location";
 import { createOrUpdateLocation } from "@db/locations/locations";
 
 export const trip = {

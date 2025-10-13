@@ -86,7 +86,7 @@ export async function createOrUpdateLocation(location: Location, userId: any) {
 		.insert(locations)
 		.values({
 			userId,
-			name: location.name ?? `Location at ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`,
+			name: location.name ?? ``,
 			latitude: location.latitude,
 			longitude: location.longitude,
 			carDifficulty: location.carDifficulty || undefined,
