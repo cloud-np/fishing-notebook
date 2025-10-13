@@ -13,6 +13,9 @@ const seo = {
 
 <PageLayout seo={seo}>
 	<div class="flex flex-col items-center justify-center gap-8">
-		<Trip client:load />
+		<!-- TODO: There is a hydration mismatch because of the internal comps
+			once fixed update to client:load
+		-->
+		<Trip client:only="svelte" />
 	</div>
 </PageLayout>
