@@ -3,21 +3,30 @@
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
-	import type { Location } from "./Trip.model";
+	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
 	import Rating from "../Rating/Rating.svelte";
+	import Plus from "phosphor-svelte/lib/Plus";
+	import SelectFromLocations from "./SelectFromLocations.svelte";
+	import { AlertDialog } from "bits-ui";
 
-	// Form state
-	let location = $state<Location>({
-		carDifficulty: 0,
-		walkDifficulty: 0,
-		rating: 0
-	});
+	let isAddLocationOpen = $state(false);
 	let selectedDate = $state<CalendarDate | undefined>(undefined);
 	let tripNotes = $state("");
 	let rating = $state(0);
 	let isSubmitting = $state(false);
 	let submitError = $state("");
 	let submitSuccess = $state(false);
+	let isSavingLocation = $state(false);
+
+	// Handle saving location when user clicks Continue in dialog
+	async function handleSaveLocation() {
+		// Validate location data
+		if (!locationState.location.latitude || !locationState.location.longitude) {
+			submitError = "Please enter valid location coordinates";
+			return;
+		}
+		isAddLocationOpen = false;
+	}
 
 	// Handle form submission
 	async function handleSubmit(event: Event) {
@@ -28,7 +37,7 @@
 		submitSuccess = false;
 
 		// Validate required fields
-		if (!location.latitude || !location.longitude) {
+		if (!locationState.location.latitude || !locationState.location.longitude) {
 			submitError = "Please select a location for your trip";
 			return;
 		}
@@ -43,12 +52,15 @@
 		try {
 			const { data, error } = await actions.trip.createTrip({
 				location: {
-					...location,
-					latitude: location.latitude,
-					longitude: location.longitude,
+					name: locationState.location.name,
+					latitude: locationState.location.latitude,
+					longitude: locationState.location.longitude,
+					carDifficulty: locationState.location.carDifficulty === 0 ? undefined : locationState.location.carDifficulty,
+					walkDifficulty: locationState.location.walkDifficulty === 0 ? undefined : locationState.location.walkDifficulty,
+					rating: locationState.location.rating === 0 ? undefined : locationState.location.rating,
 				},
 				tripDate: selectedDate.toString(),
-				rating,
+				rating: rating === 0 ? undefined : rating,
 				notes: tripNotes || undefined,
 			});
 
@@ -64,9 +76,10 @@
 
 				// Reset form after successful submission
 				setTimeout(() => {
-					location = {};
+					locationState.reset();
 					selectedDate = undefined;
 					tripNotes = "";
+					rating = 0;
 					submitSuccess = false;
 				}, 2000);
 			}
@@ -82,15 +95,68 @@
 <div class="trip-form-container">
 	<h2>Create Fishing Trip</h2>
 
-	<form onsubmit={handleSubmit} class="trip-form">
+	<div class="trip-form">
 		<!-- Date Selection -->
-
 		<section class="flex flex-col gap-4">
 			<DatePicker bind:value={selectedDate} />
 		</section>
 
-		<!-- Location Selection -->
-		<AddLocation bind:location />
+		{#if !locationState.location.latitude || !locationState.location.longitude}
+			<section class="flex flex-col gap-8 sm:flex-row">
+				<div class="flex flex-col gap-2">
+					<h1>Select Previous Location</h1>
+					<SelectFromLocations />
+				</div>
+
+				<div class="mt-6 mx-auto">
+					<span>OR</span>
+				</div>
+
+				<AlertDialog.Root bind:open={isAddLocationOpen}>
+					<div class="flex justify-center items-center flex-col gap-2">
+						<AlertDialog.Trigger onclick={() => isAddLocationOpen = true}
+							class="cursor-pointer rounded-card border-border-input text-muted-foreground flex h-16 w-16 select-none items-center justify-center border-2 border-dashed bg-transparent font-semibold"
+						>
+							<Plus />
+						</AlertDialog.Trigger>
+					</div>
+					<AlertDialog.Portal>
+						<AlertDialog.Overlay
+							class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+						/>
+						<AlertDialog.Content
+							class="rounded-card-lg bg-background shadow-popover data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed left-[50%] top-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 border p-7 sm:max-w-lg md:w-full"
+						>
+							<div class="flex flex-col gap-4 pb-6">
+								<AlertDialog.Title class="text-lg font-semibold tracking-tight mb-4">
+									Add new location 📍
+								</AlertDialog.Title>
+								<AddLocation />
+							</div>
+							<div class="flex w-full items-center justify-center gap-2">
+								<AlertDialog.Cancel
+									class="h-input rounded-input bg-muted shadow-mini hover:bg-dark-10 focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden inline-flex w-full items-center justify-center text-[15px] font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+								>
+									Cancel
+								</AlertDialog.Cancel>
+								<AlertDialog.Action
+									onclick={handleSaveLocation}
+									class="h-input rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 focus-visible:ring-dark focus-visible:ring-offset-background focus-visible:outline-hidden inline-flex w-full items-center justify-center text-[15px] font-semibold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									Save
+								</AlertDialog.Action>
+							</div>
+						</AlertDialog.Content>
+					</AlertDialog.Portal>
+				</AlertDialog.Root>
+			</section>
+		{:else}
+			<section class="flex flex-col gap-8 sm:flex-row">
+				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4">
+					{locationState.location.name}
+				</div>
+			</section>
+		{/if}
 
 		<div class="flex flex-col">
 			<h3>Select trip Rating</h3>
@@ -122,10 +188,10 @@
 		{/if}
 
 		<!-- Submit Button -->
-		<button type="submit" class="submit-button" disabled={isSubmitting}>
-			{isSubmitting ? 'Saving...' : 'Save Fishing Trip'}
+		<button onclick={handleSubmit} class="submit-button" disabled={isSubmitting}>
+			Save
 		</button>
-	</form>
+	</div>
 </div>
 
 <style>

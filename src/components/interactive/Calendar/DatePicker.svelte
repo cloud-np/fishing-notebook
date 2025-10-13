@@ -13,7 +13,7 @@
 </script>
 
 <DatePicker.Root weekdayFormat="short" fixedWeeks={true} bind:value>
-	<div class="flex w-full max-w-[232px] flex-col gap-1.5">
+	<div class="flex w-full max-w-[232px] flex-col gap-3">
 		<DatePicker.Label class="block select-none text-sm font-medium">Select Date 📅</DatePicker.Label>
 		<DatePicker.Input
 			class="h-input rounded-input border-border-input bg-background text-foreground focus-within:border-border-input-hover focus-within:shadow-date-field-focus hover:border-border-input-hover flex w-full max-w-[232px] select-none items-center border px-2 py-3 text-sm tracking-[0.01em]"
@@ -26,8 +26,7 @@
 								{value}
 							</DatePicker.Segment>
 						{:else}
-							<DatePicker.Segment
-								{part}
+							<DatePicker.Segment {part}
 								class="rounded-5px hover:bg-muted focus:bg-muted focus:text-foreground aria-[valuetext=Empty]:text-muted-foreground focus-visible:ring-0! focus-visible:ring-offset-0! px-1 py-1"
 							>
 								{value}
@@ -36,6 +35,7 @@
 					</div>
 				{/each}
 				<DatePicker.Trigger
+					type="button"
 					class="text-foreground/60 hover:bg-muted active:bg-dark-10 ml-auto inline-flex size-8 items-center justify-center rounded-[5px] transition-all"
 				>
 					<CalendarBlank class="size-6" />
@@ -73,7 +73,7 @@
 											<DatePicker.HeadCell
 												class="text-muted-foreground font-normal! w-10 rounded-md text-xs"
 											>
-												<div>{day.slice(0, 2)}</div>
+												{day.slice(0, 2)}
 											</DatePicker.HeadCell>
 										{/each}
 									</DatePicker.GridRow>

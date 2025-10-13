@@ -1,8 +1,11 @@
 import { ActionError, defineAction } from "astro:actions";
 import { createTripSchema } from "./trip.validation";
 import { db } from "@db/index";
-import { fishingTrips, locations } from "@db/schema";
+import { fishingTrips } from "@db/schema";
 import { createAuthorizedHandler } from "src/actions/auth";
+import { eq } from "drizzle-orm";
+import { location } from "../location/location";
+import { createOrUpdateLocation } from "@db/locations/locations";
 
 export const trip = {
 	createTrip: defineAction({
@@ -10,20 +13,18 @@ export const trip = {
 		input: createTripSchema,
 		handler: createAuthorizedHandler(async (input, context, session) => {
 			try {
-				// First, create or find a location for this trip
-				// For now, we'll create a simple location entry
-				const [location] = await db
-					.insert(locations)
-					.values({
-						userId: session.user.id,
-						name:
-							input.location.name ??
-							`Location at ${input.location.latitude.toFixed(4)}, ${input.location.longitude.toFixed(4)}`,
+				// Use context.callAction to create or update the location
+				const [location] = await createOrUpdateLocation(
+					{
+						name: input.location.name,
 						latitude: input.location.latitude,
 						longitude: input.location.longitude,
-						description: input.notes || null,
-					})
-					.returning();
+						carDifficulty: input.location.carDifficulty,
+						walkDifficulty: input.location.walkDifficulty,
+						rating: input.location.rating,
+					},
+					session.user.id
+				);
 
 				// Create the fishing trip
 				const [newTrip] = await db
@@ -32,11 +33,11 @@ export const trip = {
 						userId: session.user.id,
 						locationId: location.id,
 						tripDate: input.tripDate,
-						startTime: input.startTime || null,
-						endTime: input.endTime || null,
-						title: input.title || null,
-						notes: input.notes || null,
-						rating: input.rating || null,
+						startTime: input.startTime || undefined,
+						endTime: input.endTime || undefined,
+						title: input.title || undefined,
+						notes: input.notes || undefined,
+						rating: input.rating || undefined,
 					})
 					.returning();
 
@@ -54,6 +55,35 @@ export const trip = {
 				throw new ActionError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to create fishing trip",
+				});
+			}
+		}),
+	}),
+	getTrips: defineAction({
+		accept: "json",
+		handler: createAuthorizedHandler(async (_, context, session) => {
+			try {
+				const trips = await db.query.fishingTrips.findMany({
+					where: eq(fishingTrips.userId, session.user.id),
+					with: {
+						location: true,
+					},
+				});
+
+				return {
+					success: true,
+					message: "Fishing trips retrieved successfully!",
+					trips,
+				};
+			} catch (error) {
+				if (error instanceof ActionError) {
+					throw error;
+				}
+
+				console.error("Error retrieving trips:", error);
+				throw new ActionError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Failed to retrieve fishing trips",
 				});
 			}
 		}),

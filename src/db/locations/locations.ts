@@ -1,3 +1,4 @@
+import type { Location } from "@types";
 import { db } from "../index";
 import { locations } from "../schema";
 import { eq, and, sql, type InferInsertModel } from "drizzle-orm";
@@ -77,4 +78,30 @@ export async function searchLocationsByName(userId: string, searchTerm: string) 
 		.select()
 		.from(locations)
 		.where(and(eq(locations.userId, userId as any), sql`${locations.name} LIKE ${`%${searchTerm}%`}`));
+}
+
+// TODO: Need to fix this any its comes from session being any as well
+export async function createOrUpdateLocation(location: Location, userId: any) {
+	return await db
+		.insert(locations)
+		.values({
+			userId,
+			name: location.name ?? `Location at ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`,
+			latitude: location.latitude,
+			longitude: location.longitude,
+			carDifficulty: location.carDifficulty || undefined,
+			walkDifficulty: location.walkDifficulty || undefined,
+			rating: location.rating || undefined,
+		})
+		.onConflictDoUpdate({
+			target: [locations.userId, locations.latitude, locations.longitude],
+			set: {
+				name: location.name ?? sql`${locations.name}`,
+				carDifficulty: location.carDifficulty ?? sql`${locations.carDifficulty}`,
+				walkDifficulty: location.walkDifficulty ?? sql`${locations.walkDifficulty}`,
+				rating: location.rating ?? sql`${locations.rating}`,
+				updatedAt: sql`(unixepoch())`,
+			},
+		})
+		.returning();
 }

@@ -4,21 +4,18 @@
 	import { Popover } from "bits-ui";
 	import { userValueToPosition } from "@utils/helpers";
 	import Rating from "@components/interactive/Rating/Rating.svelte";
-	import type { Location } from "./Trip.model";
+	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
 	import MapPin from "phosphor-svelte/lib/MapPin";
-
-	// Props with bindable location object
-	let {
-		location = $bindable({})
-	}: {
-		location?: Location;
-	} = $props();
 
 	// Local state
 	let mapsUrl = $state("");
 	let isLoadingCoordinates = $state(false);
 	let urlError = $state("");
 	let isMapOpen = $state(false);
+	const DEFAULT_LOCATION = {
+		latitude: 37.971498,
+		longitude: 23.726647
+	}
 
 	// Handle Google Maps URL input
 	async function handleMapsUrlSubmit() {
@@ -40,8 +37,8 @@
 			}
 
 			if (data?.coordinates) {
-				location.latitude = data.coordinates.latitude;
-				location.longitude = data.coordinates.longitude;
+				locationState.location.latitude = data.coordinates.latitude;
+				locationState.location.longitude = data.coordinates.longitude;
 				console.log('Coordinates extracted:', data.coordinates);
 				urlError = "";
 			}
@@ -55,8 +52,8 @@
 
 	// Handle map click to update coordinates
 	function handleMapClick(lat: number, lng: number) {
-		location.latitude = lat;
-		location.longitude = lng;
+		locationState.location.latitude = lat;
+		locationState.location.longitude = lng;
 	}
 
 	function handlePaste(event: ClipboardEvent) {
@@ -66,8 +63,8 @@
 		// Kinda hacky, we wait for the input from the user to be processed
 		// then we set the values in an async manner.
 		setTimeout(() => {
-			location.latitude = parsedValue[0];
-			location.longitude = parsedValue[1];
+			locationState.location.latitude = parsedValue[0];
+			locationState.location.longitude = parsedValue[1];
 		}, 0);
 	}
 
@@ -76,18 +73,17 @@
 
 <!-- Location Selection -->
 <section class="flex flex-col gap-4">
-	<h2 class="text-2xl my-6">Add new location 📍</h2>
 	<div class="flex items-center gap-2 mb-6">
 		<input
 			id="maps-url"
 			type="text"
-			bind:value={location.name}
+			bind:value={locationState.location.name}
 			placeholder="Location Name"
 			class={inputClasses}
 		/>
 	</div>
 
-	<div class=" border p-4 border-border-input rounded-md">
+	<div class="mb-8 border p-4 border-border-input rounded-md">
 		<!-- Google Maps URL Input -->
 		<div class="maps-url-section">
 			<label for="maps-url">Google Maps Share Link</label>
@@ -125,7 +121,7 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={location.latitude}
+							bind:value={locationState.location.latitude}
 							onpaste={handlePaste}
 							class={inputClasses}
 							placeholder="e.g., 37.977217"
@@ -137,15 +133,15 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={location.longitude}
+							bind:value={locationState.location.longitude}
 							class={inputClasses}
 							placeholder="e.g., 23.730278"
 						/>
 					</div>
 				</div>
 				<div class="flex flex-col gap-2">
-					<p class="help-text">Or open the map to set location</p>
-					<Popover.Trigger class="cursor-pointer rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex h-12 items-center justify-center px-[21px] text-[15px] font-semibold active:scale-[0.98] active:transition-all gap-2">
+					<p class="help-text">Or open the map</p>
+					<Popover.Trigger type="button" class="cursor-pointer rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex h-12 items-center justify-center px-[21px] text-[15px] font-semibold active:scale-[0.98] active:transition-all gap-2">
 						<MapPin class="size-5" />
 						<span>Open Map</span>
 					</Popover.Trigger>
@@ -157,36 +153,36 @@
 			>
 				<div class="w-full h-full">
 					<Map
-						location={{ latitude: location.latitude, longitude: location.longitude }}
+						location={{ latitude: locationState.location.latitude || DEFAULT_LOCATION.latitude, longitude: locationState.location.longitude || DEFAULT_LOCATION.longitude }}
 						zoom={9}
 						markerMarkup={`
 							<div class="marker">
 								<p><strong>Fishing Spot</strong></p>
-								<p>Lat: ${location.latitude?.toFixed(6)}</p>
-								<p>Lng: ${location.longitude?.toFixed(6)}</p>
+								<p>Lat: ${(locationState.location.latitude || DEFAULT_LOCATION.latitude).toFixed(6)}</p>
+								<p>Lng: ${(locationState.location.longitude || DEFAULT_LOCATION.longitude).toFixed(6)}</p>
 							</div>
 						`}
 						onMarkerPlace={handleMapClick}
 					/>
 				</div>
 			</Popover.Content>
-	</Popover.Root>
+		</Popover.Root>
 	</div>
 
 	<div class="flex flex-col gap-4 justify-center items-center">
 		<div class="flex gap-4">
 			<div class="flex flex-col justify-center items-center">
 				<h3>Car Difficulty</h3>
-				<Rating bind:value={location.carDifficulty} />
+				<Rating bind:value={locationState.location.carDifficulty} />
 			</div>
 			<div class="flex flex-col justify-center items-center">
 				<h3>Walk Difficulty</h3>
-				<Rating bind:value={location.walkDifficulty} />
+				<Rating bind:value={locationState.location.walkDifficulty} />
 			</div>
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Location Overall Rating</h3>
-			<Rating bind:value={location.rating} />
+			<Rating bind:value={locationState.location.rating} />
 		</div>
 	</div>
 </section>

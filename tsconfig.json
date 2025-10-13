@@ -11,6 +11,7 @@
 			"@db/*": ["src/db/*"],
 			"@assets/*": ["src/assets/*"],
 			"@auth": ["src/actions/auth"],
+			"@types": ["src/types/index"],
 			"@libs/*": ["src/actions/libs/*"],
 			"@client-libs/*": ["src/client-libs/*"],
 			"@data/*": ["src/data/*"],

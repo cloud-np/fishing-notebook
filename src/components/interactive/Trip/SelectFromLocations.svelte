@@ -1,54 +1,66 @@
 <script lang="ts">
 	import { Select } from "bits-ui";
 	import Check from "phosphor-svelte/lib/Check";
-	import Palette from "phosphor-svelte/lib/Palette";
+	import Gps from "phosphor-svelte/lib/Gps";
 	import CaretUpDown from "phosphor-svelte/lib/CaretUpDown";
 	import CaretDoubleUp from "phosphor-svelte/lib/CaretDoubleUp";
 	import CaretDoubleDown from "phosphor-svelte/lib/CaretDoubleDown";
+	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
+	import { onMount } from "svelte";
+	import { actions } from "astro:actions";
+	import type { Location } from "@types";
 
-	const themes = [
-		{ value: "light-monochrome", label: "Light Monochrome" },
-		{ value: "dark-green", label: "Dark Green" },
-		{ value: "svelte-orange", label: "Svelte Orange" },
-		{ value: "punk-pink", label: "Punk Pink" },
-		{ value: "ocean-blue", label: "Ocean Blue", disabled: true },
-		{ value: "sunset-orange", label: "Sunset Orange" },
-		{ value: "sunset-red", label: "Sunset Red" },
-		{ value: "forest-green", label: "Forest Green" },
-		{ value: "lavender-purple", label: "Lavender Purple", disabled: true },
-		{ value: "mustard-yellow", label: "Mustard Yellow" },
-		{ value: "slate-gray", label: "Slate Gray" },
-		{ value: "neon-green", label: "Neon Green" },
-		{ value: "coral-reef", label: "Coral Reef" },
-		{ value: "midnight-blue", label: "Midnight Blue" },
-		{ value: "crimson-red", label: "Crimson Red" },
-		{ value: "mint-green", label: "Mint Green" },
-		{ value: "pastel-pink", label: "Pastel Pink" },
-		{ value: "golden-yellow", label: "Golden Yellow" },
-		{ value: "deep-purple", label: "Deep Purple" },
-		{ value: "turquoise-blue", label: "Turquoise Blue" },
-		{ value: "burnt-orange", label: "Burnt Orange" }
-	];
+	let locations = $state<Location[]>([]);
+
+	onMount(async () => {
+		const { data, error } = await actions.location.getLocations();
+		if (data && data.success) {
+			locations = data.locations;
+		} else if (error) {
+			console.error("Failed to load locations:", error);
+		}
+	});
+
+	// Create items array for Select component
+	const selectItems = $derived(
+		locations.map((loc) => ({
+			value: loc.name || `${loc.latitude},${loc.longitude}`,
+			label: loc.name || `Location at ${loc.latitude}, ${loc.longitude}`,
+		}))
+	);
 
 	let value = $state<string>("");
 	const selectedLabel = $derived(
 		value
-			? themes.find((theme) => theme.value === value)?.label
-			: "Select a theme"
+			? selectItems.find((item) => item.value === value)?.label
+			: "Select a Location"
 	);
+
+	// Update the bindable location when value changes
+	$effect(() => {
+		if (value) {
+			const selectedLocation = locations.find(
+				(loc) => (loc.name || `${loc.latitude},${loc.longitude}`) === value
+			);
+			if (selectedLocation) {
+				locationState.set({ ...selectedLocation });
+			}
+		}
+	});
 </script>
 
 <Select.Root
 	type="single"
-	onValueChange={(v) => (value = v)}
-	items={themes}
+	onValueChange={(v) => (value = v || "")}
+	items={selectItems}
 	allowDeselect={true}
 >
 	<Select.Trigger
+		type="button"
 		class="h-input rounded-9px border-border-input bg-background data-placeholder:text-foreground-alt/50 inline-flex w-[296px] touch-none select-none items-center border px-[11px] text-sm transition-colors"
-		aria-label="Select a theme"
+		aria-label="Select a location"
 	>
-		<Palette class="text-muted-foreground mr-[9px] size-6" />
+		<Gps class="text-muted-foreground mr-[9px] size-6" />
 		{selectedLabel}
 		<CaretUpDown class="text-muted-foreground ml-auto size-6" />
 	</Select.Trigger>
@@ -61,15 +73,14 @@
 				<CaretDoubleUp class="size-3" />
 			</Select.ScrollUpButton>
 			<Select.Viewport class="p-1">
-				{#each themes as theme, i (i + theme.value)}
+				{#each selectItems as item}
 					<Select.Item
 						class="rounded-button data-highlighted:bg-muted outline-hidden data-disabled:opacity-50 flex h-10 w-full select-none items-center py-3 pl-5 pr-1.5 text-sm capitalize"
-						value={theme.value}
-						label={theme.label}
-						disabled={theme.disabled}
+						value={item.value}
+						label={item.label}
 					>
 						{#snippet children({ selected })}
-							{theme.label}
+							{item.label}
 							{#if selected}
 								<div class="ml-auto">
 									<Check aria-label="check" />

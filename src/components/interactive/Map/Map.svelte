@@ -23,13 +23,7 @@
 	}
  </script>
 
-{#if latitude && longitude}
-	<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace }} ></figure>
-{:else}
-	<div class="flex items-center justify-center h-full">
-		<h1 class="text-2xl">Please add a location..</h1>
-	</div>
-{/if}
+<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace }} ></figure>
 
 <style>
 	.map-container {

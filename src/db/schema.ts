@@ -1,5 +1,5 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sql, relations } from "drizzle-orm";
 
 // Better-auth tables
 export const user = sqliteTable("user", {
@@ -78,26 +78,32 @@ export const twoFactor = sqliteTable("twoFactor", {
 });
 
 // Fishing app tables
-export const locations = sqliteTable("locations", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
-	userId: integer("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-	name: text("name").notNull(),
-	latitude: real("latitude").notNull(),
-	longitude: real("longitude").notNull(),
-	description: text("description"),
-	waterType: text("water_type", { enum: ["freshwater", "saltwater", "brackish"] }).default("saltwater"),
-	rating: integer("rating"),
-	carDifficulty: integer("car_difficulty"),
-	walkDifficulty: integer("walk_difficulty"),
-	createdAt: integer("created_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-	updatedAt: integer("updated_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-});
+export const locations = sqliteTable(
+	"locations",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		userId: integer("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		latitude: real("latitude").notNull(),
+		longitude: real("longitude").notNull(),
+		description: text("description"),
+		waterType: text("water_type", { enum: ["freshwater", "saltwater", "brackish"] }).default("saltwater"),
+		rating: integer("rating"),
+		carDifficulty: integer("car_difficulty"),
+		walkDifficulty: integer("walk_difficulty"),
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	table => ({
+		userLocationIdx: uniqueIndex("user_location_idx").on(table.userId, table.latitude, table.longitude),
+	})
+);
 
 export const fishingTrips = sqliteTable("fishing_trips", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
@@ -258,55 +264,6 @@ export const dailyWeather = sqliteTable("daily_weather", {
 		.default(sql`(unixepoch())`),
 });
 
-export const lunarSolarData = sqliteTable("lunar_solar_data", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
-	tripId: integer("trip_id")
-		.notNull()
-		.references(() => fishingTrips.id, { onDelete: "cascade" })
-		.unique(),
-	date: text("date").notNull(),
-
-	// Moon data
-	moonPhase: text("moon_phase", {
-		enum: [
-			"new",
-			"waxing_crescent",
-			"first_quarter",
-			"waxing_gibbous",
-			"full",
-			"waning_gibbous",
-			"last_quarter",
-			"waning_crescent",
-		],
-	}),
-	moonIllumination: real("moon_illumination"),
-	moonAge: real("moon_age"),
-
-	// Lunar position
-	moonrise: text("moonrise"),
-	moonset: text("moonset"),
-
-	// Solar position
-	sunrise: text("sunrise"),
-	sunset: text("sunset"),
-	dayLength: integer("day_length"),
-
-	// Solunar periods
-	majorPeriod1Start: text("major_period_1_start"),
-	majorPeriod1End: text("major_period_1_end"),
-	majorPeriod2Start: text("major_period_2_start"),
-	majorPeriod2End: text("major_period_2_end"),
-	minorPeriod1Start: text("minor_period_1_start"),
-	minorPeriod1End: text("minor_period_1_end"),
-	minorPeriod2Start: text("minor_period_2_start"),
-	minorPeriod2End: text("minor_period_2_end"),
-
-	solunarRating: integer("solunar_rating"),
-	fetchedAt: integer("fetched_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-});
-
 export const equipment = sqliteTable("equipment", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	userId: integer("user_id")
@@ -330,3 +287,55 @@ export const tripEquipment = sqliteTable("trip_equipment", {
 		.notNull()
 		.references(() => equipment.id, { onDelete: "cascade" }),
 });
+
+// Relations
+export const fishingTripsRelations = relations(fishingTrips, ({ one, many }) => ({
+	location: one(locations, {
+		fields: [fishingTrips.locationId],
+		references: [locations.id],
+	}),
+	catches: many(catches),
+	dailyWeather: one(dailyWeather),
+	equipment: many(tripEquipment),
+}));
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+	fishingTrips: many(fishingTrips),
+}));
+
+export const catchesRelations = relations(catches, ({ one }) => ({
+	trip: one(fishingTrips, {
+		fields: [catches.tripId],
+		references: [fishingTrips.id],
+	}),
+	species: one(fishSpecies, {
+		fields: [catches.speciesId],
+		references: [fishSpecies.id],
+	}),
+}));
+
+export const dailyWeatherRelations = relations(dailyWeather, ({ one }) => ({
+	trip: one(fishingTrips, {
+		fields: [dailyWeather.tripId],
+		references: [fishingTrips.id],
+	}),
+}));
+
+export const tripEquipmentRelations = relations(tripEquipment, ({ one }) => ({
+	trip: one(fishingTrips, {
+		fields: [tripEquipment.tripId],
+		references: [fishingTrips.id],
+	}),
+	equipment: one(equipment, {
+		fields: [tripEquipment.equipmentId],
+		references: [equipment.id],
+	}),
+}));
+
+export const equipmentRelations = relations(equipment, ({ many }) => ({
+	trips: many(tripEquipment),
+}));
+
+export const fishSpeciesRelations = relations(fishSpecies, ({ many }) => ({
+	catches: many(catches),
+}));
