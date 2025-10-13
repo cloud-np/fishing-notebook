@@ -35,7 +35,11 @@ export default defineConfig({
 		resolve: {
 			conditions: ["browser"],
 		},
-		plugins: [tailwindcss()],
+		plugins: [
+			tailwindcss({
+				applyBaseStyles: false,
+			}),
+		],
 	},
 	prefetch: {
 		defaultStrategy: "hover",

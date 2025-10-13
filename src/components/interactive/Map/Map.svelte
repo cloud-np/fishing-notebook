@@ -8,7 +8,7 @@
 		markerMarkup = "",
 		onMarkerPlace,
 	}: {
-		location: { latitude?: number; longitude?: number };
+		location: { latitude: number; longitude: number };
 		zoom: number;
 		markerMarkup: string;
 		onMarkerPlace?: (lat: number, lng: number) => void;
@@ -29,5 +29,6 @@
 	.map-container {
 		width: 100%;
 		height: 100%;
+		min-height: 400px;
 	}
 </style>

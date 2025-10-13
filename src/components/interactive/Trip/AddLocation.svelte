@@ -1,11 +1,14 @@
 <script lang="ts">
 	import Map from "@components/interactive/Map/Map.svelte";
 	import { actions } from "astro:actions";
-	import { Popover } from "bits-ui";
+	import * as Popover from "$lib/components/ui/popover";
 	import { userValueToPosition } from "@utils/helpers";
 	import Rating from "@components/interactive/Rating/Rating.svelte";
 	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
 	import MapPin from "phosphor-svelte/lib/MapPin";
+	import { cn } from "$lib/utils";
+	import { buttonVariants } from "$lib/components/ui/button/button.svelte";
+	import Input from "$lib/components/ui/input/input.svelte";
 
 	// Local state
 	let mapsUrl = $state("");
@@ -67,19 +70,17 @@
 			locationState.location.longitude = parsedValue[1];
 		}, 0);
 	}
-
-	const inputClasses = "rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex w-full items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm";
 </script>
 
 <!-- Location Selection -->
 <section class="flex flex-col gap-4">
 	<div class="flex items-center gap-2 mb-6">
-		<input
-			id="maps-url"
+		<Input
+			id="location-name"
 			type="text"
 			bind:value={locationState.location.name}
 			placeholder="Location Name"
-			class={inputClasses}
+			class="h-12"
 		/>
 	</div>
 
@@ -88,12 +89,12 @@
 		<div class="maps-url-section">
 			<label for="maps-url">Google Maps Share Link</label>
 			<div class="maps-url-input-wrapper">
-				<input
+				<Input
 					id="maps-url"
 					type="text"
 					bind:value={mapsUrl}
 					placeholder="Paste Google Maps share link (e.g., https://maps.app.goo.gl/...)"
-					class={inputClasses}
+					class="h-12"
 				/>
 				<button
 					type="button"
@@ -118,37 +119,44 @@
 				<div class="flex gap-4">
 					<div class="flex flex-col gap-2">
 						<label for="latitude">Latitude*</label>
-						<input
+						<Input
+							id="latitude"
 							type="number"
 							step="any"
 							bind:value={locationState.location.latitude}
 							onpaste={handlePaste}
-							class={inputClasses}
 							placeholder="e.g., 37.977217"
+							class="h-12"
 						/>
 					</div>
 
 					<div class="flex flex-col gap-2">
 						<label for="longitude">Longitude*</label>
-						<input
+						<Input
+							id="longitude"
 							type="number"
 							step="any"
 							bind:value={locationState.location.longitude}
-							class={inputClasses}
 							placeholder="e.g., 23.730278"
+							class="h-12"
 						/>
 					</div>
 				</div>
 				<div class="flex flex-col gap-2">
 					<p class="help-text">Or open the map</p>
-					<Popover.Trigger type="button" class="cursor-pointer rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex h-12 items-center justify-center px-[21px] text-[15px] font-semibold active:scale-[0.98] active:transition-all gap-2">
+					<Popover.Trigger
+						class={cn(
+							buttonVariants({ variant: "default" }),
+							"cursor-pointer gap-2"
+						)}
+					>
 						<MapPin class="size-5" />
-						<span>Open Map</span>
+						Open Map
 					</Popover.Trigger>
 				</div>
 			</div>
 			<Popover.Content
-				class="popover-map-content"
+				class="z-50 bg-[#242424] rounded-xl shadow-lg p-4 max-w-[90vw] w-[600px] min-h-[400px]"
 				sideOffset={8}
 			>
 				<div class="w-full h-full">
@@ -266,17 +274,5 @@
 		color: #666;
 		font-size: 0.875rem;
 		font-weight: 500;
-	}
-
-	:global(.popover-map-content) {
-		z-index: 50;
-		background: #242424;
-		border-radius: 0.75rem;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-		padding: 1rem;
-		max-width: 90vw;
-		width: 600px;
-		min-height: 400px;
-		height: min(400px, 10dvh);
 	}
 </style>

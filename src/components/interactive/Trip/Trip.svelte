@@ -7,7 +7,9 @@
 	import Rating from "../Rating/Rating.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 	import SelectFromLocations from "./SelectFromLocations.svelte";
-	import { AlertDialog } from "bits-ui";
+	import * as Dialog from "$lib/components/ui/dialog";
+	import Button from "$lib/components/ui/button/button.svelte";
+	import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
 	let isAddLocationOpen = $state(false);
 	let selectedDate = $state<CalendarDate | undefined>(undefined);
@@ -96,59 +98,50 @@
 	<h2>Create Fishing Trip</h2>
 
 	<div class="trip-form">
-		<!-- Date Selection -->
 		<section class="flex flex-col gap-4">
 			<DatePicker bind:value={selectedDate} />
 		</section>
 
-		{#if !locationState.location.latitude || !locationState.location.longitude}
+		{#if (!locationState.location.latitude || !locationState.location.longitude) || isAddLocationOpen}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2">
-					<h1>Select Previous Location</h1>
+					<h1>Select previous location</h1>
 					<SelectFromLocations />
 				</div>
 
-				<div class="mt-6 mx-auto">
-					<span>OR</span>
-				</div>
-
-				<AlertDialog.Root bind:open={isAddLocationOpen}>
+				<Dialog.Root bind:open={isAddLocationOpen}>
 					<div class="flex justify-center items-center flex-col gap-2">
-						<AlertDialog.Trigger onclick={() => isAddLocationOpen = true}
-							class="cursor-pointer rounded-card border-border-input text-muted-foreground flex h-16 w-16 select-none items-center justify-center border-2 border-dashed bg-transparent font-semibold"
+						<h1>Add a new location</h1>
+						<Dialog.Trigger
+							class="cursor-pointer rounded-card rounded-md border-border-input text-muted-foreground flex h-16 w-16 select-none items-center justify-center border-2 border-dashed bg-transparent font-semibold"
 						>
 							<Plus />
-						</AlertDialog.Trigger>
+						</Dialog.Trigger>
 					</div>
-					<AlertDialog.Portal>
-						<AlertDialog.Overlay
-							class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
-						/>
-						<AlertDialog.Content
-							class="rounded-card-lg bg-background shadow-popover data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed left-[50%] top-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 border p-7 sm:max-w-lg md:w-full"
-						>
-							<div class="flex flex-col gap-4 pb-6">
-								<AlertDialog.Title class="text-lg font-semibold tracking-tight mb-4">
-									Add new location 📍
-								</AlertDialog.Title>
+					<Dialog.Portal>
+						<Dialog.Overlay />
+						<Dialog.Content class="sm:max-w-lg">
+							<Dialog.Header>
+								<Dialog.Title>Add new location 📍</Dialog.Title>
+							</Dialog.Header>
+							<div class="flex flex-col gap-4 py-4">
 								<AddLocation />
 							</div>
-							<div class="flex w-full items-center justify-center gap-2">
-								<AlertDialog.Cancel
-									class="h-input rounded-input bg-muted shadow-mini hover:bg-dark-10 focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden inline-flex w-full items-center justify-center text-[15px] font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
-								>
-									Cancel
-								</AlertDialog.Cancel>
-								<AlertDialog.Action
+							<Dialog.Footer class="flex flex-col gap-2">
+								<Dialog.Close>
+									<Button>
+										Cancel
+									</Button>
+								</Dialog.Close>
+								<Button
 									onclick={handleSaveLocation}
-									class="h-input rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 focus-visible:ring-dark focus-visible:ring-offset-background focus-visible:outline-hidden inline-flex w-full items-center justify-center text-[15px] font-semibold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									Save
-								</AlertDialog.Action>
-							</div>
-						</AlertDialog.Content>
-					</AlertDialog.Portal>
-				</AlertDialog.Root>
+								</Button>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Portal>
+				</Dialog.Root>
 			</section>
 		{:else}
 			<section class="flex flex-col gap-8 sm:flex-row">
@@ -162,32 +155,27 @@
 			<h3>Select trip Rating</h3>
 			<Rating bind:value={rating} />
 		</div>
-		<!-- Notes -->
 		<section class="flex flex-col gap-4">
 			<h3>Trip Notes</h3>
-			<textarea
+			<Textarea
 				bind:value={tripNotes}
 				placeholder="Add notes about your fishing trip..."
-				rows="4"
-				class="rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex w-full items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm" name="name"
-			></textarea>
+				rows={4}
+			/>
 		</section>
 
-		<!-- Error Message -->
 		{#if submitError}
 			<div class="message error-message">
 				{submitError}
 			</div>
 		{/if}
 
-		<!-- Success Message -->
 		{#if submitSuccess}
 			<div class="message success-message">
 				Fishing trip created successfully!
 			</div>
 		{/if}
 
-		<!-- Submit Button -->
 		<button onclick={handleSubmit} class="submit-button" disabled={isSubmitting}>
 			Save
 		</button>
