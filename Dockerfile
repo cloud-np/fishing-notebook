@@ -45,6 +45,7 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 	echo 'echo "GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET" >> .env' >> /entrypoint.sh && \
 	echo 'echo "DB_FILE_NAME=$DB_FILE_NAME" >> .env' >> /entrypoint.sh && \
 	echo 'echo "PROD=$PROD" >> .env' >> /entrypoint.sh && \
+	echo 'echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> .env' >> /entrypoint.sh && \
 	echo 'exec "$@"' >> /entrypoint.sh && \
 	chmod +x /entrypoint.sh
 

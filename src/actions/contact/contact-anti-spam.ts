@@ -2,7 +2,7 @@ import { type ActionAPIContext } from "astro:actions";
 import { z } from "astro:schema";
 import { ActionError } from "astro:actions";
 import type { ContactDuplicateDetector } from "src/actions/contact/contact-duplicate-detector";
-import type { RateLimiter } from "src/server/libs/security/rate-limiter";
+import type { RateLimiter } from "@libs/security/rate-limiter";
 import { getDuplicateDetector, getRateLimiter } from "src/actions/contact/middlewares";
 import { contactFormSchema } from "./contact.validation";
 
