@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, uniqueIndex, index } from "drizzle-orm/sqlite-core";
 import { sql, relations } from "drizzle-orm";
 
 // Better-auth tables
@@ -105,25 +105,31 @@ export const locations = sqliteTable(
 	})
 );
 
-export const fishingTrips = sqliteTable("fishing_trips", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-	locationId: integer("location_id").references(() => locations.id, { onDelete: "set null" }),
-	tripDate: text("trip_date").notNull(),
-	startTime: text("start_time"),
-	endTime: text("end_time"),
-	title: text("title"),
-	notes: text("notes"),
-	rating: integer("rating"),
-	createdAt: integer("created_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-	updatedAt: integer("updated_at", { mode: "timestamp" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-});
+export const fishingTrips = sqliteTable(
+	"fishing_trips",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		locationId: integer("location_id").references(() => locations.id, { onDelete: "set null" }),
+		tripDate: text("trip_date").notNull(),
+		startTime: text("start_time"),
+		endTime: text("end_time"),
+		title: text("title"),
+		notes: text("notes"),
+		rating: integer("rating"),
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	table => ({
+		userDateIdx: index("user_date_idx").on(table.userId, table.tripDate),
+	})
+);
 
 export const fishSpecies = sqliteTable("fish_species", {
 	id: integer("id").primaryKey({ autoIncrement: true }),

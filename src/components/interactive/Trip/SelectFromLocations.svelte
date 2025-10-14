@@ -5,7 +5,7 @@
 	import CaretUpDown from "phosphor-svelte/lib/CaretUpDown";
 	import CaretDoubleUp from "phosphor-svelte/lib/CaretDoubleUp";
 	import CaretDoubleDown from "phosphor-svelte/lib/CaretDoubleDown";
-	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
+	import { locationState } from "@components/interactive/Trip/trip.shared.svelte";
 	import { onMount } from "svelte";
 	import { actions } from "astro:actions";
 	import type { Location } from "@types";
@@ -53,7 +53,8 @@
 
 <Combobox.Root
 	type="single"
-	onSelectedChange={(v) => handleSelectedChange(v?.value)}
+	bind:value={searchValue}
+	onValueChange={handleSelectedChange}
 	onOpenChangeComplete={(o) => {
 		if (!o) searchValue = "";
 	}}

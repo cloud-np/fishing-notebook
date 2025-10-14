@@ -44,9 +44,9 @@ const nofollow = Astro.props.nofollow || false;
 <title>{title}</title>
 
 <!-- Favicon and App Icons -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" href="/favicon.svg" />
+<!-- <link rel="apple-touch-icon" href="/favicon.svg" /> -->
 <link rel="manifest" href="/site.webmanifest" />
 
 <!-- Sitemap -->
@@ -121,7 +121,7 @@ const nofollow = Astro.props.nofollow || false;
 		"@type": section ? "Article" : settings.business.type,
 		name: settings.name,
 		url: settings.url,
-		logo: `${settings.url}/favicon.svg`,
+		logo: `${settings.url}/favicon.ico`,
 		description: description,
 		contactPoint: {
 			"@type": "ContactPoint",
@@ -165,7 +165,7 @@ const nofollow = Astro.props.nofollow || false;
 					name: settings.name,
 					logo: {
 						"@type": "ImageObject",
-						url: `${settings.url}/favicon.svg`,
+						url: `${settings.url}/favicon.ico`,
 					},
 				},
 				datePublished: publishedTime,

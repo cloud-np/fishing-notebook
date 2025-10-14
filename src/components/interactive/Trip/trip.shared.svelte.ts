@@ -1,4 +1,4 @@
-import type { Location } from "@types";
+import type { Location, Trip } from "@types";
 
 class LocationState {
 	location = $state<Partial<Location>>({
@@ -20,4 +20,13 @@ class LocationState {
 	}
 }
 
+class TripState {
+	trip = $state<Trip | undefined>(undefined);
+
+	set(newTrip: Trip | undefined) {
+		this.trip = newTrip;
+	}
+}
+
 export const locationState = new LocationState();
+export const tripState = new TripState();

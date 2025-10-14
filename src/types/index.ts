@@ -1,4 +1,4 @@
 import type { Location } from "./Location.model";
-import type { Trip } from "./Trip.model";
+import type { Trip, TripsByDate } from "./Trip.model";
 
-export type { Location, Trip };
+export type { Location, Trip, TripsByDate };

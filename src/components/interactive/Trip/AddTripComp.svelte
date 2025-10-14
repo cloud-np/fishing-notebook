@@ -3,9 +3,10 @@
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
-	import { locationState } from "@components/interactive/Trip/location.shared.svelte";
+	import { locationState } from "@components/interactive/Trip/trip.shared.svelte";
 	import Rating from "../Rating/Rating.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
+	import ArrowLeft from "phosphor-svelte/lib/ArrowLeft";
 	import SelectFromLocations from "./SelectFromLocations.svelte";
 	import { AlertDialog } from "bits-ui";
 
@@ -16,7 +17,7 @@
 	let isSubmitting = $state(false);
 	let submitError = $state("");
 	let submitSuccess = $state(false);
-	let isSavingLocation = $state(false);
+	let selectedLocation = $derived(locationState.location);
 
 	// Handle saving location when user clicks Continue in dialog
 	async function handleSaveLocation() {
@@ -32,6 +33,7 @@
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
 
+		console.log("handleSubmit", locationState.location, selectedLocation);
 		// Reset states
 		submitError = "";
 		submitSuccess = false;
@@ -93,6 +95,17 @@
 </script>
 
 <div class="trip-form-container">
+	<div class="mb-4">
+		<button
+			onclick={() => window.history.back()}
+			class="inline-flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+			aria-label="Go back"
+		>
+			<ArrowLeft class="size-5" weight="bold" />
+			<span>Back</span>
+		</button>
+	</div>
+
 	<h2>Create Fishing Trip</h2>
 
 	<div class="trip-form">

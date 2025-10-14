@@ -1,8 +1,8 @@
 ---
-import BaseHead from '../components/core/BaseHead.astro';
-import type { Props as BaseHeadProps } from '../components/core/BaseHead.astro';
+import BaseHead from "../components/core/BaseHead.astro";
+import type { Props as BaseHeadProps } from "../components/core/BaseHead.astro";
 import CookieConsent from "../components/interactive/CookieConsent/CookieConsent.svelte";
-import { getLangFromUrl } from '../i18n/utils';
+import { getLangFromUrl } from "../i18n/utils";
 
 export interface Props {
 	seo?: BaseHeadProps;
@@ -16,31 +16,31 @@ const lang = getLangFromUrl(Astro.url);
 <html lang={lang}>
 	<head>
 		<BaseHead {...seo} />
-		<slot name="head"/>
+		<slot name="head" />
 	</head>
 	<body class=`${isLightTheme ? 'light' : 'dark'}`>
 		<slot name="header" />
 		<main>
 			<slot />
-			<CookieConsent client:idle {lang} />
+			<!-- <CookieConsent client:idle {lang} /> -->
 		</main>
 		<slot name="footer" />
 	</body>
 </html>
 
 <style>
-    body {
+	body {
 		overflow-x: hidden;
-        font-family: var(--f-mono);
-        font-weight: 400;
-        line-height: 1.5;
+		font-family: var(--f-mono);
+		font-weight: 400;
+		line-height: 1.5;
 		display: flex;
 		flex-direction: column;
-        max-width: 100vw;
-    }
+		max-width: 100vw;
+	}
 
 	.dark {
-        color: var(--c-text_light);
+		color: var(--c-text_light);
 		background-color: var(--c-bg_dark);
 	}
 

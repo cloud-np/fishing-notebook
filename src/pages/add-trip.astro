@@ -1,5 +1,5 @@
 ---
-import Trip from "@components/interactive/Trip/Trip.svelte";
+import AddTripComp from "@components/interactive/Trip/AddTripComp.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
 
 export const prerender = false;
@@ -16,6 +16,6 @@ const seo = {
 		<!-- TODO: There is a hydration mismatch because of the internal comps
 			once fixed update to client:load
 		-->
-		<Trip client:only="svelte" />
+		<AddTripComp client:only="svelte" />
 	</div>
 </PageLayout>

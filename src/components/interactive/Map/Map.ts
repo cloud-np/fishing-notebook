@@ -8,12 +8,14 @@ export function setMap(
 		zoom,
 		markerMarkup = "",
 		onMarkerPlace,
+		ignoreMarkerClick = false,
 	}: {
 		latitude: number;
 		longitude: number;
 		zoom: number;
 		markerMarkup?: string;
 		onMarkerPlace?: (lat: number, lng: number) => void;
+		ignoreMarkerClick?: boolean;
 	}
 ) {
 	let currentMarker: Marker | null = null;
@@ -45,7 +47,7 @@ export function setMap(
 		}
 
 		// Add click event listener to place marker on map click
-		if (onMarkerPlace) {
+		if (!ignoreMarkerClick && onMarkerPlace) {
 			map.on("click", e => {
 				const { lat, lng } = e.latlng;
 

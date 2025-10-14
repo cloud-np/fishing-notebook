@@ -41,7 +41,7 @@ export default defineConfig({
 		defaultStrategy: "hover",
 		prefetchAll: true,
 	},
-	output: "static",
+	output: "server",
 	plugins: [],
 	adapter: node({
 		mode: "standalone",

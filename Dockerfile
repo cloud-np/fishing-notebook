@@ -40,10 +40,13 @@ RUN adduser --system --uid 1001 astro
 
 # Create entrypoint script to generate .env from environment variables
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
-    echo 'echo "GMAIL_USER=$GMAIL_USER" > .env' >> /entrypoint.sh && \
-    echo 'echo "GMAIL_PASS=$GMAIL_PASS" >> .env' >> /entrypoint.sh && \
-    echo 'exec "$@"' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
+	echo 'echo "RESEND_API_KEY=$RESEND_API_KEY" > .env' >> /entrypoint.sh && \
+	echo 'echo "GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID" >> .env' >> /entrypoint.sh && \
+	echo 'echo "GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET" >> .env' >> /entrypoint.sh && \
+	echo 'echo "DB_FILE_NAME=$DB_FILE_NAME" >> .env' >> /entrypoint.sh && \
+	echo 'echo "PROD=$PROD" >> .env' >> /entrypoint.sh && \
+	echo 'exec "$@"' >> /entrypoint.sh && \
+	chmod +x /entrypoint.sh
 
 # Copy the built application
 COPY --from=builder --chown=astro:nodejs /app/dist ./dist

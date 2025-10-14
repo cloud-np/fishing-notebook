@@ -3,15 +3,58 @@
 	import cn from "clsx";
 	import CaretLeft from "phosphor-svelte/lib/CaretLeft";
 	import CaretRight from "phosphor-svelte/lib/CaretRight";
-	import { getLocalTimeZone, today } from "@internationalized/date";
+	import { getLocalTimeZone, today, type DateValue } from "@internationalized/date";
+	import { actions } from "astro:actions";
+	import { onMount } from "svelte";
+	import type { TripsByDate } from "@types";
+	import { tripState } from "../Trip/trip.shared.svelte";
 
-	let value = $state(today(getLocalTimeZone()));
+	let currentDate = $state(today(getLocalTimeZone()));
+	let monthTrips = $state<TripsByDate>({});
+	let { value = $bindable() } = $props();
+
+	const fetchTripsForMonth = async (date: typeof currentDate) => {
+		// Get the first and last day of the month
+		const year = date.year;
+		const month = date.month;
+
+		// Format: YYYY-MM-DD
+		const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+
+		// Get last day of month
+		const lastDay = new Date(year, month, 0).getDate();
+		const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+		const { data, error } = await actions.trip.getTripsByDate({
+			startDate,
+			endDate,
+		});
+
+		if (data && data.success) {
+			monthTrips = data.trips;
+			if (data.hasMore) {
+				console.warn(data.message);
+			}
+		} else if (error) {
+			console.error("Failed to load trips:", error);
+		}
+	};
+
+	onMount(async () => {
+		await fetchTripsForMonth(currentDate);
+	});
 
 	const buttonClasses = "rounded-9px bg-background-alt hover:bg-muted inline-flex size-10 items-center justify-center active:scale-[0.98]";
 	const sizing = "size-10 md:size-[6vw] md:text-[2vw] lg:size-25 lg:text-xl";
 	const handleMonthChange = async (isNext: boolean) => {
-		// const currentDate = isNext ? value.add({ months: 1 }) : value.subtract({ months: 1 });
-		// value = currentDate;
+		currentDate = isNext ? currentDate.add({ months: 1 }) : currentDate.subtract({ months: 1 });
+		await fetchTripsForMonth(currentDate);
+	}
+	const handleCellClick = (date: DateValue) => {
+		const selectedTrip = monthTrips[date.toString()];
+		if (!selectedTrip) return;
+
+		tripState.set(selectedTrip);
 	}
 </script>
 
@@ -20,14 +63,14 @@
 	weekdayFormat="short"
 	fixedWeeks={true}
 	type="single"
-	bind:value
+	bind:value={currentDate}
 >
 {#snippet children({ months, weekdays })}
 	<Calendar.Header class="flex items-center justify-between md:pb-10">
 		<Calendar.PrevButton class={buttonClasses} onclick={() => handleMonthChange(false)}>
 			<CaretLeft class="size-6" />
 		</Calendar.PrevButton>
-		<Calendar.Heading class="text-[2.5vw] lg:text-3xl font-medium" />
+		<Calendar.Heading class="text-xl sm:text-[2.5vw] lg:text-3xl font-medium" />
 		<Calendar.NextButton class={buttonClasses} onclick={() => handleMonthChange(true)}>
 			<CaretRight class="size-6" />
 		</Calendar.NextButton>
@@ -48,14 +91,21 @@
 					{#each month.weeks as weekDates, i (i)}
 						<Calendar.GridRow class="flex w-full">
 							{#each weekDates as date, i (i)}
-								<Calendar.Cell {date} month={month.value} class={cn("p-0! relative m-0 text-center text-sm focus-within:z-20", sizing)}>
+								<Calendar.Cell
+									{date}
+									month={month.value}
+									onclick={() => handleCellClick(date)}
+									class={cn("p-0! w-full relative m-0 text-center text-sm focus-within:z-20", sizing)}
+								>
 									<Calendar.Day
 										class={cn("rounded-9px text-foreground hover:border-foreground data-selected:bg-foreground data-disabled:text-foreground/30 data-selected:text-background ",
 										"data-unavailable:text-muted-foreground data-disabled:pointer-events-none data-outside-month:pointer-events-none data-selected:font-medium data-unavailable:line-through",
 										"group relative inline-flex size-10 items-center justify-center whitespace-nowrap border border-transparent bg-transparent p-0 text-sm font-normal", sizing
 										)}
 									>
-										<div class="bg-foreground group-data-selected:bg-background group-data-today:block absolute top-[5px] hidden size-[1vw] lg:size-3 rounded-full"></div>
+										{#if monthTrips && monthTrips[date.toString()]}
+											<div class="bg-foreground group-data-selected:bg-background absolute top-[5px] size-[1vw] lg:size-3 rounded-full"></div>
+										{/if}
 										{date.day}
 									</Calendar.Day>
 								</Calendar.Cell>

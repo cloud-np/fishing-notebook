@@ -7,11 +7,13 @@
 		zoom = 19,
 		markerMarkup = "",
 		onMarkerPlace,
+		ignoreMarkerClick = false
 	}: {
-		location: { latitude?: number; longitude?: number };
+		location: { latitude: number; longitude: number };
 		zoom: number;
 		markerMarkup: string;
 		onMarkerPlace?: (lat: number, lng: number) => void;
+		ignoreMarkerClick: boolean;
 	} = $props();
 
 	const { latitude, longitude } = location;
@@ -23,7 +25,7 @@
 	}
  </script>
 
-<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace }} ></figure>
+<figure class="map-container" use:setMap={{ latitude, longitude, zoom, markerMarkup, onMarkerPlace: handleMarkerPlace, ignoreMarkerClick }} ></figure>
 
 <style>
 	.map-container {

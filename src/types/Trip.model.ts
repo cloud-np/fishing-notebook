@@ -11,3 +11,5 @@ export interface Trip {
 	updatedAt: Date;
 	location?: Location;
 }
+
+export type TripsByDate = Record<string, Trip>;

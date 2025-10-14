@@ -1,5 +1,6 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
+import DashboardComp from "@components/containers/DashboardComp.svelte";
 import { Moon } from "@libs/lunar";
 
 export const prerender = false;
@@ -22,4 +23,8 @@ const seo = {
 };
 ---
 
-<PageLayout seo={seo} />
+<PageLayout seo={seo}>
+	<div class="flex justify-center">
+		<DashboardComp client:load />
+	</div>
+</PageLayout>

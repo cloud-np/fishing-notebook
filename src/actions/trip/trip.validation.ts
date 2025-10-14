@@ -17,3 +17,9 @@ export const createTripSchema = z.object({
 	endTime: z.string().optional(),
 	successRating: z.number().min(1).max(5).optional(),
 });
+
+export const getTripsByDateSchema = z.object({
+	startDate: z.string().min(1, "Start date is required"),
+	endDate: z.string().min(1, "End date is required"),
+	limit: z.number().int().positive().max(1000).default(1000),
+});
