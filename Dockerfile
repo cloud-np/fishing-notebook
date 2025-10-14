@@ -23,7 +23,8 @@ RUN pnpm run build
 
 # Production image, copy all the files and run astro
 FROM base AS runner
-RUN apk add --no-cache libc6-compat
+# Install build tools needed for better-sqlite3 native module
+RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -32,15 +33,18 @@ ENV ASTRO_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 astro
 
-# Copy package files
-COPY --from=builder --chown=astro:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=astro:nodejs /app/pnpm-lock.yaml ./pnpm-lock.yaml
+# Copy package files and install production dependencies
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Copy node_modules from builder (includes compiled native modules like better-sqlite3)
-COPY --from=builder --chown=astro:nodejs /app/node_modules ./node_modules
+# Install only production dependencies (this will rebuild better-sqlite3 for Alpine)
+RUN pnpm install --prod --frozen-lockfile
 
 # Copy the built application
 COPY --from=builder --chown=astro:nodejs /app/dist ./dist
+
+# Change ownership after installation
+RUN chown -R astro:nodejs /app
 
 # Create directory for SQLite database
 RUN mkdir -p /app/data && chown -R astro:nodejs /app

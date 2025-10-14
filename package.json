@@ -8,6 +8,7 @@
         "build": "astro check && astro build",
         "preview": "astro preview",
         "astro": "astro",
+        "postinstall": "cd node_modules/better-sqlite3 && pnpm run build-release",
         "db:migrate": "tsx scripts/migrate-db.ts",
         "db:generate": "drizzle-kit generate",
         "db:push": "drizzle-kit push",
