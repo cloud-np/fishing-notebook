@@ -1,6 +1,6 @@
 import { db } from "../index";
 import { catches, fishSpecies } from "../schema";
-import { eq, and, desc, sum, count, sql, type InferInsertModel } from "drizzle-orm";
+import { eq, desc, sum, count, sql, type InferInsertModel } from "drizzle-orm";
 
 /**
  * Insert a new catch

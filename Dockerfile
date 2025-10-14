@@ -32,13 +32,15 @@ ENV ASTRO_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 astro
 
-# Copy package files and install production dependencies
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+# Copy package files
+COPY --from=builder --chown=astro:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=astro:nodejs /app/pnpm-lock.yaml ./pnpm-lock.yaml
+
+# Copy node_modules from builder (includes compiled native modules like better-sqlite3)
+COPY --from=builder --chown=astro:nodejs /app/node_modules ./node_modules
 
 # Copy the built application
 COPY --from=builder --chown=astro:nodejs /app/dist ./dist
-COPY --from=builder --chown=astro:nodejs /app/package.json ./package.json
 
 # Create directory for SQLite database
 RUN mkdir -p /app/data && chown -R astro:nodejs /app
@@ -58,6 +60,9 @@ USER astro
 EXPOSE 4321
 ENV HOST=0.0.0.0
 ENV PORT=4321
+
+# Declare volume for SQLite database persistence
+VOLUME ["/app/data"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "./dist/server/entry.mjs"]

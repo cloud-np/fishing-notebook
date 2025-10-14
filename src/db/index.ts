@@ -4,7 +4,8 @@ import { eq, and } from "drizzle-orm";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import * as schema from "./schema";
 
-const sqlite = new Database("./fishing-app.sqlite");
+const dbPath = import.meta.env.NODE_ENV === "production" ? "/app/data/fishing-app.sqlite" : "./fishing-app.sqlite";
+const sqlite = new Database(dbPath);
 sqlite.pragma("foreign_keys = ON");
 
 export const db = drizzle(sqlite, { schema });
