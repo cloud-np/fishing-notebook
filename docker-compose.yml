@@ -1,19 +1,23 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "4321:4321"
-    volumes:
-      # Use ../files for Dokploy to persist data between deployments
-      - "../files/fishing-db:/app/data"
-    environment:
-      - NODE_ENV=production
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
-      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - PROD=${PROD:-true}
-      - DB_FILE_NAME=${DB_FILE_NAME:-fishing-app.sqlite}
-    restart: unless-stopped
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "4321:4321"
+        volumes:
+            # Use ../files for Dokploy to persist data between deployments
+            - type: bind
+              source: ../files/fishing-db
+              target: /app/data
+              bind:
+                  create_host_path: true
+        environment:
+            - NODE_ENV=production
+            - RESEND_API_KEY=${RESEND_API_KEY}
+            - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+            - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+            - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+            - PROD=${PROD:-true}
+            - DB_FILE_NAME=${DB_FILE_NAME:-fishing-app.sqlite}
+        restart: unless-stopped
