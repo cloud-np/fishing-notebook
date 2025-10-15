@@ -13,8 +13,8 @@ try {
 		migrate(db, { migrationsFolder: "./src/db/migrations" });
 		console.log("✅ Migrations completed successfully!");
 	} catch (error) {
-		console.log("ℹ️  No migrations found. Use 'npm run db:generate' to create migration files.");
-		console.log("   Or use 'npm run db:push' to push schema directly.");
+		console.error("⚠️  Migration error:", error);
+		console.log("ℹ️  This might be expected if migrations were already applied.");
 	}
 
 	sqlite.close();

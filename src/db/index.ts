@@ -4,7 +4,11 @@ import { eq, and } from "drizzle-orm";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import * as schema from "./schema";
 
-const dbPath = import.meta.env.NODE_ENV === "production" ? "/app/data/fishing-app.sqlite" : "./fishing-app.sqlite";
+// Support both Astro's import.meta.env and regular Node.js process.env
+const isProduction =
+	(typeof import.meta.env !== "undefined" && import.meta.env.NODE_ENV === "production") ||
+	process.env.NODE_ENV === "production";
+const dbPath = isProduction ? "/app/data/fishing-app.sqlite" : "./fishing-app.sqlite";
 const sqlite = new Database(dbPath);
 sqlite.pragma("foreign_keys = ON");
 

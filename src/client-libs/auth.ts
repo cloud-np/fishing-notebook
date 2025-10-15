@@ -9,6 +9,8 @@ const getBaseURL = () => {
 };
 
 export const authClient = createAuthClient({
+	// https://www.better-auth.com/docs/concepts/client#create-client-instance
+	// Since our Auth server runs on the same domain as our client we could skip this.
 	baseURL: getBaseURL(),
 });
 

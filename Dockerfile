@@ -41,11 +41,17 @@ RUN adduser --system --uid 1001 astro
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Install only production dependencies (this will rebuild better-sqlite3 for Alpine)
-RUN pnpm install --prod --frozen-lockfile
+# Install only production dependencies plus tsx for migrations (this will rebuild better-sqlite3 for Alpine)
+RUN pnpm install --prod --frozen-lockfile && pnpm add tsx
 
 # Copy the built application
 COPY --from=builder --chown=astro:nodejs /app/dist ./dist
+
+# Copy migration files and scripts
+COPY --from=builder --chown=astro:nodejs /app/src/db/migrations ./src/db/migrations
+COPY --from=builder --chown=astro:nodejs /app/scripts ./scripts
+COPY --from=builder --chown=astro:nodejs /app/src/db/schema.ts ./src/db/schema.ts
+COPY --from=builder --chown=astro:nodejs /app/src/db/index.ts ./src/db/index.ts
 
 # Change ownership after installation
 RUN chown -R astro:nodejs /app
@@ -72,6 +78,10 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 	echo 'echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> /app/.env' >> /entrypoint.sh && \
 	echo 'echo "BETTER_AUTH_URL=$BETTER_AUTH_URL" >> /app/.env' >> /entrypoint.sh && \
 	echo 'echo "PUBLIC_SITE_URL=$PUBLIC_SITE_URL" >> /app/.env' >> /entrypoint.sh && \
+	echo '' >> /entrypoint.sh && \
+	echo '# Run database migrations' >> /entrypoint.sh && \
+	echo 'echo "Running database migrations..."' >> /entrypoint.sh && \
+	echo 'node --import tsx/esm /app/scripts/migrate-db.ts || echo "Warning: Migration failed or no migrations to run"' >> /entrypoint.sh && \
 	echo '' >> /entrypoint.sh && \
 	echo 'exec "$@"' >> /entrypoint.sh && \
 	chmod +x /entrypoint.sh
