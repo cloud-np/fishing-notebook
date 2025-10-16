@@ -18,6 +18,7 @@ export const auth = betterAuth({
 		},
 	}),
 	baseURL: import.meta.env.BETTER_AUTH_URL || "http://localhost:4321",
+	trustedOrigins: ["http://localhost:4321", "https://fish.cloudnp.xyz"],
 	account: {
 		accountLinking: {
 			enabled: true,
