@@ -13,11 +13,16 @@ services:
               bind:
                   create_host_path: true
         environment:
-            - NODE_ENV=production
+            # These environment variables must be set in Dokploy's UI
+            # Declaring them here allows Dokploy to inject their values
+            - NODE_ENV=${NODE_ENV:-production}
             - RESEND_API_KEY=${RESEND_API_KEY}
             - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
             - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
             - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-            - PROD=${PROD:-true}
+            - BETTER_AUTH_URL=${BETTER_AUTH_URL}
             - DB_FILE_NAME=${DB_FILE_NAME:-fishing-app.sqlite}
+            - PROD=${PROD:-true}
+            - GMAIL_USER=${GMAIL_USER}
+            - GMAIL_PASS=${GMAIL_PASS}
         restart: unless-stopped

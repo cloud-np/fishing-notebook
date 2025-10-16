@@ -11,11 +11,12 @@ export interface SendEmail {
 
 export class EmailService {
 	readonly transporter: nodemailer.Transporter;
-	gmailFromEmail = import.meta.env.GMAIL_USER;
+	gmailFromEmail = import.meta.env.GMAIL_USER || process.env.GMAIL_USER;
 	readonly resend: Resend;
 
 	constructor() {
-		this.resend = new Resend(import.meta.env.RESEND_API_KEY);
+		const resendApiKey = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+		this.resend = new Resend(resendApiKey);
 		// Slightly less secure, maybe we need to setup the SSL ca in Docker
 		// but this works for now. Later on we can check if we can update this.
 		this.transporter = nodemailer.createTransport({
@@ -24,7 +25,7 @@ export class EmailService {
 			secure: false, // true for 465, false for other ports
 			auth: {
 				user: this.gmailFromEmail,
-				pass: import.meta.env.GMAIL_PASS,
+				pass: import.meta.env.GMAIL_PASS || process.env.GMAIL_PASS,
 			},
 			tls: {
 				ciphers: "SSLv3",

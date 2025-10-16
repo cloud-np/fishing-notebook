@@ -7,6 +7,23 @@ import * as schema from "@db/schema";
 import { getEmailService } from "@libs/services";
 import { ActionError } from "astro:actions";
 
+// Log configuration on startup
+// In production, Astro's import.meta.env doesn't read from process.env, so we need to check both
+const baseURL = import.meta.env.BETTER_AUTH_URL || process.env.BETTER_AUTH_URL || "http://localhost:4321";
+const githubClientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID || "";
+const githubClientSecret = import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET || "";
+const betterAuthSecret = import.meta.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || "";
+const nodeEnv = import.meta.env.PROD ? "production" : "development";
+
+console.log("=== Better Auth Configuration ===");
+console.log("Environment:", nodeEnv);
+console.log("Base URL:", baseURL);
+console.log("GitHub Client ID:", githubClientId ? `${githubClientId.substring(0, 8)}...` : "NOT SET");
+console.log("GitHub Client Secret:", githubClientSecret ? "SET" : "NOT SET");
+console.log("Better Auth Secret:", betterAuthSecret ? "SET" : "NOT SET");
+console.log("Trusted Origins:", ["http://localhost:4321", "https://fish.cloudnp.xyz"]);
+console.log("================================");
+
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "sqlite",
@@ -17,7 +34,7 @@ export const auth = betterAuth({
 			verification: schema.verification,
 		},
 	}),
-	baseURL: import.meta.env.BETTER_AUTH_URL || "http://localhost:4321",
+	baseURL: baseURL,
 	trustedOrigins: ["http://localhost:4321", "https://fish.cloudnp.xyz"],
 	account: {
 		accountLinking: {
@@ -34,7 +51,7 @@ export const auth = betterAuth({
 		autoSignIn: true,
 	},
 	emailVerification: {
-		sendOnSignUp: true,
+		sendOnSignUp: false,
 		sendVerificationEmail: async ({ user, url, token }, request) => {
 			// console.log(`Sending verification email to ${user.email}: ${url}`);
 			await getEmailService().sendEmail({
@@ -47,8 +64,8 @@ export const auth = betterAuth({
 	},
 	socialProviders: {
 		github: {
-			clientId: import.meta.env.GITHUB_CLIENT_ID || "",
-			clientSecret: import.meta.env.GITHUB_CLIENT_SECRET || "",
+			clientId: githubClientId,
+			clientSecret: githubClientSecret,
 		},
 	},
 	plugins: [
