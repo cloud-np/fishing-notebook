@@ -1,7 +1,7 @@
 {
-  "name": "Home Upgrades - Modern Architecture & Interior Design",
-  "short_name": "Home Upgrades",
-  "description": "Επαγγελματικές ανακαινίσεις σπιτιού στην Αθήνα. Κουζίνες, μπάνια, εσωτερική διακόσμηση και αρχιτεκτονικός σχεδιασμός με σύγχρονη αισθητική.",
+  "name": "Fishing Notebook",
+  "short_name": "Fishing Notebook",
+  "description": "Fishing Notebook is a comprehensive platform for anglers to share their fishing experiences, tips, and techniques. Explore the latest fishing news, discover new fishing spots, and connect with fellow anglers.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/favicon.ico",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
