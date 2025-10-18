@@ -18,6 +18,10 @@ class LocationState {
 	set(newLocation: Partial<Location>) {
 		this.location = { ...newLocation };
 	}
+
+	isSet() {
+		return !!this.location?.latitude && !!this.location.longitude;
+	}
 }
 
 class TripState {

@@ -9,6 +9,7 @@
 	import ArrowLeft from "phosphor-svelte/lib/ArrowLeft";
 	import SelectFromLocations from "./SelectFromLocations.svelte";
 	import { AlertDialog } from "bits-ui";
+	import Trash from "phosphor-svelte/lib/Trash";
 
 	let isAddLocationOpen = $state(false);
 	let selectedDate = $state<CalendarDate | undefined>(undefined);
@@ -17,12 +18,12 @@
 	let isSubmitting = $state(false);
 	let submitError = $state("");
 	let submitSuccess = $state(false);
-	let selectedLocation = $derived(locationState.location);
+	let selectedLocation = $derived(locationState.location ?? { latitude: 20, longitude: 20 });
 
 	// Handle saving location when user clicks Continue in dialog
 	async function handleSaveLocation() {
 		// Validate location data
-		if (!locationState.location.latitude || !locationState.location.longitude) {
+		if (!selectedLocation.latitude || !selectedLocation.longitude) {
 			submitError = "Please enter valid location coordinates";
 			return;
 		}
@@ -33,13 +34,12 @@
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
 
-		console.log("handleSubmit", locationState.location, selectedLocation);
 		// Reset states
 		submitError = "";
 		submitSuccess = false;
 
 		// Validate required fields
-		if (!locationState.location.latitude || !locationState.location.longitude) {
+		if (!selectedLocation.latitude || !selectedLocation.longitude) {
 			submitError = "Please select a location for your trip";
 			return;
 		}
@@ -54,12 +54,12 @@
 		try {
 			const { data, error } = await actions.trip.createTrip({
 				location: {
-					name: locationState.location.name,
-					latitude: locationState.location.latitude,
-					longitude: locationState.location.longitude,
-					carDifficulty: locationState.location.carDifficulty === 0 ? undefined : locationState.location.carDifficulty,
-					walkDifficulty: locationState.location.walkDifficulty === 0 ? undefined : locationState.location.walkDifficulty,
-					rating: locationState.location.rating === 0 ? undefined : locationState.location.rating,
+					name: selectedLocation.name,
+					latitude: selectedLocation.latitude,
+					longitude: selectedLocation.longitude,
+					carDifficulty: selectedLocation.carDifficulty === 0 ? undefined : selectedLocation.carDifficulty,
+					walkDifficulty: selectedLocation.walkDifficulty === 0 ? undefined : selectedLocation.walkDifficulty,
+					rating: selectedLocation.rating === 0 ? undefined : selectedLocation.rating,
 				},
 				tripDate: selectedDate.toString(),
 				rating: rating === 0 ? undefined : rating,
@@ -68,13 +68,11 @@
 
 			if (error) {
 				submitError = error.message || "Failed to create trip";
-				console.error('Error creating trip:', error);
 				return;
 			}
 
 			if (data?.success) {
 				submitSuccess = true;
-				console.log('Trip created successfully:', data.trip);
 
 				// Reset form after successful submission
 				setTimeout(() => {
@@ -87,7 +85,6 @@
 			}
 		} catch (error) {
 			submitError = (error as Error).message || "An unexpected error occurred";
-			console.error('Error:', error);
 		} finally {
 			isSubmitting = false;
 		}
@@ -114,7 +111,7 @@
 			<DatePicker bind:value={selectedDate} />
 		</section>
 
-		{#if (!locationState.location.latitude || !locationState.location.longitude) || isAddLocationOpen}
+		{#if !locationState.isSet() || isAddLocationOpen}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2">
 					<h1>Select Previous Location</h1>
@@ -164,9 +161,12 @@
 				</AlertDialog.Root>
 			</section>
 		{:else}
-			<section class="flex flex-col gap-8 sm:flex-row">
-				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4">
-					{locationState.location.name ?? `Location at ${locationState.location.latitude.toFixed(4)}, ${locationState.location.longitude.toFixed(4)}`}
+			<section class="flex flex-col gap-8 sm:flex-row ">
+				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4 pr-8 relative">
+					{selectedLocation.name ?? `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
+					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationState.reset()}>
+						<Trash />
+					</button>
 				</div>
 			</section>
 		{/if}

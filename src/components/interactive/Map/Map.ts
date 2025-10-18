@@ -1,6 +1,6 @@
-import type { Marker, TileLayerOptions } from "leaflet";
+import type { Marker, TileLayerOptions, Map as LeafletMap } from "leaflet";
 
-export function setMap(
+export async function initializeMap(
 	mapElement: HTMLElement,
 	{
 		latitude,
@@ -17,55 +17,94 @@ export function setMap(
 		onMarkerPlace?: (lat: number, lng: number) => void;
 		ignoreMarkerClick?: boolean;
 	}
-) {
+): Promise<{
+	map: LeafletMap;
+	markerIcon: any;
+	marker: any;
+}> {
+	const { icon: leafletIcon, map: leafletMap, marker: leafletMarker, tileLayer } = await import("leaflet");
+
+	const markerIcon = leafletIcon({
+		iconUrl: "/map-marker.svg",
+		iconSize: [25, 41],
+		iconAnchor: [10, 41],
+		popupAnchor: [2, -40],
+	});
+
+	const tileLayerOptions: TileLayerOptions = {
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+		maxZoom: 19,
+	};
+
+	const map = leafletMap(mapElement).setView([latitude, longitude], zoom);
+	tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", tileLayerOptions).addTo(map);
+
+	// Add initial marker if coordinates are provided
 	let currentMarker: Marker | null = null;
+	if (latitude && longitude) {
+		currentMarker = leafletMarker([latitude, longitude], { icon: markerIcon });
+		if (markerMarkup !== "") {
+			currentMarker.bindPopup(markerMarkup);
+		}
+		currentMarker.addTo(map);
+	}
 
-	(async () => {
-		const { icon: leafletIcon, map: leafletMap, marker: leafletMarker, tileLayer } = await import("leaflet");
+	// Add click event listener to place marker on map click
+	if (!ignoreMarkerClick && onMarkerPlace) {
+		map.on("click", e => {
+			const { lat, lng } = e.latlng;
 
-		const markerIcon = leafletIcon({
-			iconUrl: "/map-marker.svg",
-			iconSize: [25, 41],
-			iconAnchor: [10, 41],
-			popupAnchor: [2, -40],
-		});
+			// Remove existing marker if present
+			if (currentMarker) {
+				map.removeLayer(currentMarker);
+			}
 
-		const tileLayerOptions: TileLayerOptions = {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-			maxZoom: 19,
-		};
-		const map = leafletMap(mapElement).setView([latitude, longitude], zoom);
-		tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", tileLayerOptions).addTo(map);
-
-		// Add initial marker if coordinates are provided
-		if (latitude && longitude) {
-			currentMarker = leafletMarker([latitude, longitude], { icon: markerIcon });
+			// Add new marker at clicked location
+			currentMarker = leafletMarker([lat, lng], { icon: markerIcon });
 			if (markerMarkup !== "") {
 				currentMarker.bindPopup(markerMarkup);
 			}
 			currentMarker.addTo(map);
-		}
 
-		// Add click event listener to place marker on map click
-		if (!ignoreMarkerClick && onMarkerPlace) {
-			map.on("click", e => {
-				const { lat, lng } = e.latlng;
+			// Call the callback with the new coordinates
+			onMarkerPlace(lat, lng);
+		});
+	}
 
-				// Remove existing marker if present
-				if (currentMarker) {
-					map.removeLayer(currentMarker);
-				}
+	return { map, markerIcon, marker: leafletMarker };
+}
 
-				// Add new marker at clicked location
-				currentMarker = leafletMarker([lat, lng], { icon: markerIcon });
-				if (markerMarkup !== "") {
-					currentMarker.bindPopup(markerMarkup);
-				}
-				currentMarker.addTo(map);
+export function updateMapLocation(
+	map: LeafletMap,
+	markerIcon: any,
+	leafletMarker: any,
+	currentMarker: Marker | null,
+	{
+		latitude,
+		longitude,
+		zoom,
+		markerMarkup = "",
+	}: {
+		latitude: number;
+		longitude: number;
+		zoom: number;
+		markerMarkup?: string;
+	}
+): Marker {
+	// Update map view
+	map.setView([latitude, longitude], zoom);
 
-				// Call the callback with the new coordinates
-				onMarkerPlace(lat, lng);
-			});
-		}
-	})();
+	// Remove existing marker
+	if (currentMarker) {
+		map.removeLayer(currentMarker);
+	}
+
+	// Add marker at new location
+	const newMarker = leafletMarker([latitude, longitude], { icon: markerIcon });
+	if (markerMarkup !== "") {
+		newMarker.bindPopup(markerMarkup);
+	}
+	newMarker.addTo(map);
+
+	return newMarker;
 }

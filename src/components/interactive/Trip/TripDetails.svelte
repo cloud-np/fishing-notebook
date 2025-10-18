@@ -139,6 +139,7 @@
 						location={{ latitude: trip.location.latitude, longitude: trip.location.longitude }}
 						zoom={15}
 						ignoreMarkerClick={true}
+						markerMarkup=""
 					/>
 				</div>
 			</div>
