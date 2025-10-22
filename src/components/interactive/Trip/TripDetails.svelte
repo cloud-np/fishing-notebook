@@ -7,6 +7,7 @@
 	import CarSimple from "phosphor-svelte/lib/CarSimple";
 	import PersonSimpleWalk from "phosphor-svelte/lib/PersonSimpleWalk";
 	import Note from "phosphor-svelte/lib/Note";
+	import X from "phosphor-svelte/lib/X";
 	import Map from "@components/interactive/Map/Map.svelte";
 
 	interface Props {
@@ -14,6 +15,7 @@
 	}
 
 	let { trip }: Props = $props();
+	let isMapOpen = $state(false);
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
@@ -116,7 +118,7 @@
 			<!-- Difficulty Levels -->
 			<div class="grid grid-cols-2 gap-4 mt-4">
 				{#if trip.location.carDifficulty}
-					<div class="flex items-center gap-2 text-sm">
+					<div class="flex items-center gap-2 text-sm flex-wrap">
 						<CarSimple class="size-5 text-muted-foreground" />
 						<span class="text-muted-foreground">Car Access:</span>
 						<span class="font-medium text-foreground">{getDifficultyLabel(trip.location.carDifficulty)}</span>
@@ -124,7 +126,7 @@
 				{/if}
 
 				{#if trip.location.walkDifficulty}
-					<div class="flex items-center gap-2 text-sm">
+					<div class="flex items-center gap-2 text-sm flex-wrap">
 						<PersonSimpleWalk class="size-5 text-muted-foreground" />
 						<span class="text-muted-foreground">Walk Access:</span>
 						<span class="font-medium text-foreground">{getDifficultyLabel(trip.location.walkDifficulty)}</span>
@@ -133,15 +135,34 @@
 			</div>
 
 			<!-- Map -->
-			<div class="mt-6 rounded-lg overflow-hidden border border-dark-10">
-				<div class="h-[300px] lg:h-[400px]">
-					<Map
-						location={{ latitude: trip.location.latitude, longitude: trip.location.longitude }}
-						zoom={15}
-						ignoreMarkerClick={true}
-						markerMarkup=""
-					/>
-				</div>
+			<div class="mt-6">
+				{#if !isMapOpen}
+					<button
+						onclick={() => isMapOpen = true}
+						class="inline-flex items-center gap-2 px-4 py-2.5 bg-dark text-background rounded-lg hover:bg-dark/95 transition-all active:scale-[0.98] font-medium"
+					>
+						<MapPin class="size-5" />
+						<span>Open Map</span>
+					</button>
+				{:else}
+					<div class="relative rounded-lg overflow-hidden border border-dark-10">
+						<button
+							onclick={() => isMapOpen = false}
+							class="absolute z-[2] top-3 right-3 bg-background/90 hover:bg-background text-foreground rounded-lg p-2 shadow-lg transition-all active:scale-[0.95] backdrop-blur-sm"
+							aria-label="Close map"
+						>
+							<X class="size-5" weight="bold" />
+						</button>
+						<div class="h-[300px] lg:h-[400px]">
+							<Map
+								location={{ latitude: trip.location.latitude, longitude: trip.location.longitude }}
+								zoom={15}
+								ignoreMarkerClick={true}
+								markerMarkup=""
+							/>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 	{/if}
