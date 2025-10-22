@@ -68,7 +68,7 @@
 		}, 0);
 	}
 
-	const inputClasses = "rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex w-full items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm";
+	const inputClasses = "rounded-card-sm p-4 border-border-input bg-background placeholder:text-foreground-alt/50 hover:border-dark-40 focus:ring-foreground focus:ring-offset-background focus:outline-hidden inline-flex items-center border px-4 text-base focus:ring-2 focus:ring-offset-2 sm:text-sm";
 </script>
 
 <!-- Location Selection -->
@@ -83,11 +83,11 @@
 		/>
 	</div>
 
-	<div class="mb-8 border p-4 border-border-input rounded-md">
+	<div class="border p-4 border-border-input rounded-md">
 		<!-- Google Maps URL Input -->
 		<div class="maps-url-section">
 			<label for="maps-url">Google Maps Share Link</label>
-			<div class="maps-url-input-wrapper">
+			<div class="maps-url-input-wrapper flex flex-col">
 				<input
 					id="maps-url"
 					type="text"
@@ -114,9 +114,9 @@
 		</div>
 		<!-- Manual Coordinate Inputs -->
 		<Popover.Root bind:open={isMapOpen}>
-			<div class="flex gap-4">
-				<div class="flex gap-4">
-					<div class="flex flex-col gap-2">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col sm:flex-row gap-4 flex-1">
+					<div class="flex flex-col gap-2 flex-1">
 						<label for="latitude">Latitude*</label>
 						<input
 							type="number"
@@ -128,7 +128,7 @@
 						/>
 					</div>
 
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-2 flex-1">
 						<label for="longitude">Longitude*</label>
 						<input
 							type="number"
@@ -140,8 +140,8 @@
 					</div>
 				</div>
 				<div class="flex flex-col gap-2">
-					<p class="help-text">Or open the map</p>
-					<Popover.Trigger type="button" class="cursor-pointer rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex h-12 items-center justify-center px-[21px] text-[15px] font-semibold active:scale-[0.98] active:transition-all gap-2">
+					<p class="text-center italic text-gray-500">Or open the map</p>
+					<Popover.Trigger type="button" class="cursor-pointer rounded-input bg-dark text-background shadow-mini hover:bg-dark/95 inline-flex h-12 items-center justify-center px-[21px] text-[15px] font-semibold active:scale-[0.98] active:transition-all gap-2 whitespace-nowrap">
 						<MapPin class="size-5" />
 						<span>Open Map</span>
 					</Popover.Trigger>
@@ -170,15 +170,13 @@
 	</div>
 
 	<div class="flex flex-col gap-4 justify-center items-center">
-		<div class="flex gap-4">
-			<div class="flex flex-col justify-center items-center">
-				<h3>Car Difficulty</h3>
-				<Rating bind:value={locationState.location.carDifficulty} />
-			</div>
-			<div class="flex flex-col justify-center items-center">
-				<h3>Walk Difficulty</h3>
-				<Rating bind:value={locationState.location.walkDifficulty} />
-			</div>
+		<div class="flex flex-col justify-center items-center">
+			<h3>Car Difficulty</h3>
+			<Rating bind:value={locationState.location.carDifficulty} />
+		</div>
+		<div class="flex flex-col justify-center items-center">
+			<h3>Walk Difficulty</h3>
+			<Rating bind:value={locationState.location.walkDifficulty} />
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Location Overall Rating</h3>
@@ -196,12 +194,6 @@
 	label {
 		font-weight: 500;
 		font-size: 0.875rem;
-	}
-
-	.help-text {
-		font-size: 0.875rem;
-		color: #666;
-		font-style: italic;
 	}
 
 	.error-text {

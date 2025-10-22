@@ -135,15 +135,17 @@
 							class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
 						/>
 						<AlertDialog.Content
-							class="rounded-card-lg bg-background shadow-popover data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed left-[50%] top-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 border p-7 sm:max-w-lg md:w-full"
+							class="rounded-card-lg bg-background shadow-popover data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 outline-hidden fixed left-[50%] top-[50%] z-50 flex flex-col w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] border sm:max-w-lg md:w-full max-h-[calc(100dvh-2rem)]"
 						>
-							<div class="flex flex-col gap-4 pb-6">
-								<AlertDialog.Title class="text-lg font-semibold tracking-tight mb-4">
+							<div class="flex flex-col gap-4 px-7 pt-7 pb-4">
+								<AlertDialog.Title class="text-lg font-semibold tracking-tight">
 									Add new location 📍
 								</AlertDialog.Title>
+							</div>
+							<div class="flex-1 overflow-y-auto overflow-x-hidden px-7 pb-4">
 								<AddLocation />
 							</div>
-							<div class="flex w-full items-center justify-center gap-2">
+							<div class="flex w-full items-center justify-center gap-2 px-7 pb-7 pt-4 border-t">
 								<AlertDialog.Cancel
 									class="h-input rounded-input bg-muted shadow-mini hover:bg-dark-10 focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden inline-flex w-full items-center justify-center text-[15px] font-medium transition-all focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
 								>
@@ -163,7 +165,7 @@
 		{:else}
 			<section class="flex flex-col gap-8 sm:flex-row ">
 				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4 pr-8 relative">
-					{selectedLocation.name ?? `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
+					{selectedLocation.name || `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
 					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationState.reset()}>
 						<Trash />
 					</button>

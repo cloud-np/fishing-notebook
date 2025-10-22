@@ -94,6 +94,9 @@ export class WeatherService {
 		// Maybe we can abstract this away, not even sure if this is ok
 		// but at least we don't hit the endpoint more than once
 		const dbData = await getDataFromDbByArgs("dailyWeather", { latitude, longitude, date });
+		if (dbData) {
+			return dbData as FetchedDailyWeather;
+		}
 
 		const params = new URLSearchParams({
 			latitude: latitude.toString(),

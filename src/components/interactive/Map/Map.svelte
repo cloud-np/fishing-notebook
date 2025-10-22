@@ -14,7 +14,7 @@
 		zoom: number;
 		markerMarkup: string;
 		onMarkerPlace?: (lat: number, lng: number) => void;
-		ignoreMarkerClick: boolean;
+		ignoreMarkerClick?: boolean;
 	} = $props();
 
 	let mapElement: HTMLElement;
