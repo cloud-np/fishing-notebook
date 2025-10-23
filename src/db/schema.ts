@@ -100,9 +100,7 @@ export const locations = sqliteTable(
 			.notNull()
 			.default(sql`(unixepoch())`),
 	},
-	table => ({
-		userLocationIdx: uniqueIndex("user_location_idx").on(table.userId, table.latitude, table.longitude),
-	})
+	table => [uniqueIndex("user_location_idx").on(table.userId, table.latitude, table.longitude)]
 );
 
 export const fishingTrips = sqliteTable(
@@ -126,9 +124,7 @@ export const fishingTrips = sqliteTable(
 			.notNull()
 			.default(sql`(unixepoch())`),
 	},
-	table => ({
-		userDateIdx: index("user_date_idx").on(table.userId, table.tripDate),
-	})
+	table => [index("user_date_idx").on(table.userId, table.tripDate)]
 );
 
 export const fishSpecies = sqliteTable("fish_species", {
@@ -162,12 +158,76 @@ export const catches = sqliteTable("catches", {
 		.default(sql`(unixepoch())`),
 });
 
+export const hourlyWeather = sqliteTable(
+	"hourly_weather",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		latitude: real("latitude").notNull(),
+		longitude: real("longitude").notNull(),
+		date: text("date").notNull(),
+		time: text("time").notNull(), // ISO 8601 format: 2025-10-23T03:00
+		// Temperature
+		temperature2m: real("temperature_2m"),
+		apparentTemperature: real("apparent_temperature"),
+		temperature80m: real("temperature_80m"),
+		temperature120m: real("temperature_120m"),
+		temperature180m: real("temperature_180m"),
+		// Weather condition
+		weatherCode: integer("weather_code"),
+		// Pressure
+		pressureMsl: real("pressure_msl"),
+		surfacePressure: real("surface_pressure"),
+		// Cloud cover
+		cloudCover: real("cloud_cover"),
+		cloudCoverLow: real("cloud_cover_low"),
+		cloudCoverMid: real("cloud_cover_mid"),
+		cloudCoverHigh: real("cloud_cover_high"),
+		// Visibility
+		visibility: real("visibility"),
+		// Evapotranspiration
+		evapotranspiration: real("evapotranspiration"),
+		et0FaoEvapotranspiration: real("et0_fao_evapotranspiration"),
+		// Humidity and dew point
+		relativeHumidity2m: real("relative_humidity_2m"),
+		dewPoint2m: real("dew_point_2m"),
+		vapourPressureDeficit: real("vapour_pressure_deficit"),
+		// Precipitation
+		precipitationProbability: real("precipitation_probability"),
+		precipitation: real("precipitation"),
+		rain: real("rain"),
+		showers: real("showers"),
+		snowfall: real("snowfall"),
+		snowDepth: real("snow_depth"),
+		// Wind
+		windSpeed10m: real("wind_speed_10m"),
+		windSpeed80m: real("wind_speed_80m"),
+		windSpeed120m: real("wind_speed_120m"),
+		windSpeed180m: real("wind_speed_180m"),
+		windDirection10m: integer("wind_direction_10m"),
+		windDirection80m: integer("wind_direction_80m"),
+		windDirection120m: integer("wind_direction_120m"),
+		windDirection180m: integer("wind_direction_180m"),
+		windGusts10m: real("wind_gusts_10m"),
+		// Soil temperature
+		soilTemperature0cm: real("soil_temperature_0cm"),
+		soilTemperature6cm: real("soil_temperature_6cm"),
+		soilTemperature18cm: real("soil_temperature_18cm"),
+		soilTemperature54cm: real("soil_temperature_54cm"),
+		// Soil moisture
+		soilMoisture0To1cm: real("soil_moisture_0_to_1cm"),
+		soilMoisture1To3cm: real("soil_moisture_1_to_3cm"),
+		soilMoisture3To9cm: real("soil_moisture_3_to_9cm"),
+		soilMoisture9To27cm: real("soil_moisture_9_to_27cm"),
+		soilMoisture27To81cm: real("soil_moisture_27_to_81cm"),
+		fetchedAt: integer("fetched_at", { mode: "timestamp" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	table => [uniqueIndex("time_idx").on(table.time)]
+);
+
 export const dailyWeather = sqliteTable("daily_weather", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	tripId: integer("trip_id")
-		.notNull()
-		.references(() => fishingTrips.id, { onDelete: "cascade" })
-		.unique(),
 	latitude: real("latitude").notNull(),
 	longitude: real("longitude").notNull(),
 	date: text("date").notNull(),
@@ -302,6 +362,7 @@ export const fishingTripsRelations = relations(fishingTrips, ({ one, many }) => 
 	}),
 	catches: many(catches),
 	dailyWeather: one(dailyWeather),
+	hourlyWeather: many(hourlyWeather),
 	equipment: many(tripEquipment),
 }));
 
@@ -317,13 +378,6 @@ export const catchesRelations = relations(catches, ({ one }) => ({
 	species: one(fishSpecies, {
 		fields: [catches.speciesId],
 		references: [fishSpecies.id],
-	}),
-}));
-
-export const dailyWeatherRelations = relations(dailyWeather, ({ one }) => ({
-	trip: one(fishingTrips, {
-		fields: [dailyWeather.tripId],
-		references: [fishingTrips.id],
 	}),
 }));
 

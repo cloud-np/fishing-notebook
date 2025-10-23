@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Calendar from "@components/interactive/Calendar/Calendar.svelte";
 	import TripDetails from "@components/interactive/Trip/TripDetails.svelte";
-	import { tripState } from "@components/interactive/Trip/trip.shared.svelte";
+	import { tripState, weatherState } from "@components/interactive/Trip/trip.shared.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 
 	let selectedTrip = $derived(tripState.trip);
@@ -17,6 +17,8 @@
 	</a>
 	<div class="flex flex-col sm:flex-row gap-4">
 		<Calendar />
+
+		<!-- TODO: When we open TripDetails then try to fetch weather data -->
 		{#if selectedTrip}
 			<TripDetails trip={selectedTrip} />
 		{/if}

@@ -50,6 +50,7 @@
 		currentDate = isNext ? currentDate.add({ months: 1 }) : currentDate.subtract({ months: 1 });
 		await fetchTripsForMonth(currentDate);
 	}
+
 	const handleCellClick = (date: DateValue) => {
 		const selectedTrip = monthTrips[date.toString()];
 		if (!selectedTrip) return;

@@ -14,6 +14,8 @@
 		trip: Trip;
 	}
 
+	// let selectedWeather = $derived(weatherState.weather);
+
 	let { trip }: Props = $props();
 	let isMapOpen = $state(false);
 
