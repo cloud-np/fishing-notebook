@@ -11,7 +11,7 @@ async function main() {
 	console.log(`Fetching hourly weather data for ${date}...\n`);
 
 	try {
-		const data = await weatherService.getHourlyWeather(latitude, longitude, date);
+		const data = await weatherService.getHourlyWeather(date, latitude, longitude);
 
 		console.log("Weather data fetched successfully!\n");
 		console.log(`Location: ${data.latitude}°N, ${data.longitude}°E`);

@@ -1,6 +1,8 @@
 import { dailyWeather as dailyWeatherType } from "src/db/schema";
 import type { InferInsertModel } from "drizzle-orm";
 import { getDataFromDbByArgs } from "@db/index";
+import { createOrUpdateHourlyWeather, getHourlyWeatherByDate } from "@db/weather/hourlyWeather";
+import { roundCoordinate } from "src/utils/helpers";
 
 export type DailyWeather = InferInsertModel<typeof dailyWeatherType>;
 export type FetchedDailyWeather = Omit<DailyWeather, "id" | "fetchedAt">;
@@ -180,6 +182,18 @@ export interface OpenMeteoHourlyWeatherResponse extends OpenMeteoBaseResponse {
 
 export class WeatherService {
 	lastDailyWeather?: FetchedDailyWeather = undefined;
+
+	async fetchHourlyWeather(date: string, latitude: number, longitude: number) {
+		const roundedLat = roundCoordinate(latitude);
+		const roundedLon = roundCoordinate(longitude);
+		const weatherData = await getHourlyWeatherByDate(date, roundedLat, roundedLon);
+
+		if (weatherData.length > 0) {
+			return weatherData;
+		}
+
+		return await this.fetchAndSaveHourlyWeather(date, roundedLat, roundedLon);
+	}
 
 	async fetchDailyWeather(latitude: number, longitude: number, date: string): Promise<FetchedDailyWeather> {
 		// If the user requested the same location as the last time, return the cached data
@@ -363,10 +377,13 @@ export class WeatherService {
 		return dailyWeatherData;
 	}
 
-	async getHourlyWeather(latitude: number, longitude: number, date: string): Promise<OpenMeteoHourlyWeatherResponse> {
+	async getHourlyWeather(date: string, latitude: number, longitude: number): Promise<OpenMeteoHourlyWeatherResponse> {
+		const roundedLat = roundCoordinate(latitude);
+		const roundedLon = roundCoordinate(longitude);
+
 		const params = new URLSearchParams({
-			latitude: latitude.toString(),
-			longitude: longitude.toString(),
+			latitude: roundedLat.toString(),
+			longitude: roundedLon.toString(),
 			start_date: date,
 			end_date: date,
 			hourly: [
@@ -426,6 +443,83 @@ export class WeatherService {
 
 		const data = await response.json();
 		return data;
+	}
+
+	/**
+	 * Fetches hourly weather data from the API and saves it to the database
+	 * @param latitude - Location latitude
+	 * @param longitude - Location longitude
+	 * @param date - Date in YYYY-MM-DD format
+	 * @returns Promise that resolves when all hourly data is saved
+	 */
+	async fetchAndSaveHourlyWeather(date: string, latitude: number, longitude: number) {
+		const weatherResponse = await this.getHourlyWeather(date, latitude, longitude);
+		// Save each hour's weather data with rounded coordinates for consistency
+		const hourlyData = weatherResponse.hourly;
+		const promises = hourlyData.time.map((time, index) => {
+			return createOrUpdateHourlyWeather({
+				latitude: roundCoordinate(weatherResponse.latitude),
+				longitude: roundCoordinate(weatherResponse.longitude),
+				date: date,
+				time: time,
+				// Temperature
+				temperature2m: hourlyData.temperature_2m[index],
+				apparentTemperature: hourlyData.apparent_temperature[index],
+				temperature80m: hourlyData.temperature_80m[index],
+				temperature120m: hourlyData.temperature_120m[index],
+				temperature180m: hourlyData.temperature_180m[index],
+				// Weather condition
+				weatherCode: hourlyData.weather_code[index],
+				// Pressure
+				pressureMsl: hourlyData.pressure_msl[index],
+				surfacePressure: hourlyData.surface_pressure[index],
+				// Cloud cover
+				cloudCover: hourlyData.cloud_cover[index],
+				cloudCoverLow: hourlyData.cloud_cover_low[index],
+				cloudCoverMid: hourlyData.cloud_cover_mid[index],
+				cloudCoverHigh: hourlyData.cloud_cover_high[index],
+				// Visibility
+				visibility: hourlyData.visibility[index],
+				// Evapotranspiration
+				evapotranspiration: hourlyData.evapotranspiration[index],
+				et0FaoEvapotranspiration: hourlyData.et0_fao_evapotranspiration[index],
+				// Humidity and dew point
+				relativeHumidity2m: hourlyData.relative_humidity_2m[index],
+				dewPoint2m: hourlyData.dew_point_2m[index],
+				vapourPressureDeficit: hourlyData.vapour_pressure_deficit[index],
+				// Precipitation
+				precipitationProbability: hourlyData.precipitation_probability[index],
+				precipitation: hourlyData.precipitation[index],
+				rain: hourlyData.rain[index],
+				showers: hourlyData.showers[index],
+				snowfall: hourlyData.snowfall[index],
+				snowDepth: hourlyData.snow_depth[index],
+				// Wind
+				windSpeed10m: hourlyData.wind_speed_10m[index],
+				windSpeed80m: hourlyData.wind_speed_80m[index],
+				windSpeed120m: hourlyData.wind_speed_120m[index],
+				windSpeed180m: hourlyData.wind_speed_180m[index],
+				windDirection10m: hourlyData.wind_direction_10m[index],
+				windDirection80m: hourlyData.wind_direction_80m[index],
+				windDirection120m: hourlyData.wind_direction_120m[index],
+				windDirection180m: hourlyData.wind_direction_180m[index],
+				windGusts10m: hourlyData.wind_gusts_10m[index],
+				// Soil temperature
+				soilTemperature0cm: hourlyData.soil_temperature_0cm[index],
+				soilTemperature6cm: hourlyData.soil_temperature_6cm[index],
+				soilTemperature18cm: hourlyData.soil_temperature_18cm[index],
+				soilTemperature54cm: hourlyData.soil_temperature_54cm[index],
+				// Soil moisture
+				soilMoisture0To1cm: hourlyData.soil_moisture_0_to_1cm[index],
+				soilMoisture1To3cm: hourlyData.soil_moisture_1_to_3cm[index],
+				soilMoisture3To9cm: hourlyData.soil_moisture_3_to_9cm[index],
+				soilMoisture9To27cm: hourlyData.soil_moisture_9_to_27cm[index],
+				soilMoisture27To81cm: hourlyData.soil_moisture_27_to_81cm[index],
+			});
+		});
+
+		// Wait for all hourly weather records to be saved
+		return await Promise.all(promises);
 	}
 }
 

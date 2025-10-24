@@ -1,4 +1,4 @@
-import type { Location, Trip, Weather } from "@types";
+import type { Location, Trip, Weather, HourlyWeather } from "@types";
 
 class LocationState {
 	location = $state<Partial<Location>>({
@@ -34,9 +34,14 @@ class TripState {
 
 class WeatherState {
 	weather = $state<Weather | undefined>(undefined);
+	hourlyWeather = $state<HourlyWeather[] | undefined>(undefined);
 
 	set(newWeather: Weather | undefined) {
 		this.weather = newWeather;
+	}
+
+	setHourlyWeather(newHourlyWeather: HourlyWeather[] | undefined) {
+		this.hourlyWeather = newHourlyWeather;
 	}
 }
 

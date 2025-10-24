@@ -9,12 +9,11 @@
 	import Note from "phosphor-svelte/lib/Note";
 	import X from "phosphor-svelte/lib/X";
 	import Map from "@components/interactive/Map/Map.svelte";
+	import Weather from "@components/interactive/Weather/Weather.svelte";
 
 	interface Props {
 		trip: Trip;
 	}
-
-	// let selectedWeather = $derived(weatherState.weather);
 
 	let { trip }: Props = $props();
 	let isMapOpen = $state(false);
@@ -62,6 +61,16 @@
 			<span class="text-base lg:text-lg">{formatDate(trip.tripDate)}</span>
 		</div>
 	</div>
+
+	{#if trip.location?.longitude && trip.location.latitude}
+		<div>
+			<Weather
+				longitude={trip.location.longitude}
+				latitude={trip.location.latitude}
+				date={trip.tripDate}
+			/>
+		</div>
+	{/if}
 
 	<!-- Time Information -->
 	{#if trip.startTime || trip.endTime}

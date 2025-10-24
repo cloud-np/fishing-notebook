@@ -1,9 +1,10 @@
 import { db } from "../index";
 import { hourlyWeather } from "../schema";
-import { sql } from "drizzle-orm";
-import type { InferInsertModel } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 export type HourlyWeatherInsert = Omit<InferInsertModel<typeof hourlyWeather>, "id">;
+export type HourlyWeatherSelect = InferSelectModel<typeof hourlyWeather>;
 
 /**
  * Insert or update hourly weather data for a fishing trip
@@ -72,7 +73,7 @@ export async function createOrUpdateHourlyWeather(data: HourlyWeatherInsert) {
 			soilMoisture27To81cm: data.soilMoisture27To81cm ?? undefined,
 		})
 		.onConflictDoUpdate({
-			target: [hourlyWeather.tripId, hourlyWeather.time],
+			target: [hourlyWeather.time],
 			set: {
 				latitude: data.latitude ?? sql`${hourlyWeather.latitude}`,
 				longitude: data.longitude ?? sql`${hourlyWeather.longitude}`,
@@ -136,4 +137,29 @@ export async function createOrUpdateHourlyWeather(data: HourlyWeatherInsert) {
 			},
 		})
 		.returning();
+}
+
+/**
+ * Get hourly weather data by date and location
+ * @param date - Date in YYYY-MM-DD format
+ * @param latitude - Location latitude
+ * @param longitude - Location longitude
+ * @returns Array of hourly weather records for the specified date and location, ordered by time
+ */
+export async function getHourlyWeatherByDate(
+	date: string,
+	latitude: number,
+	longitude: number
+): Promise<HourlyWeatherSelect[]> {
+	return await db
+		.select()
+		.from(hourlyWeather)
+		.where(
+			and(
+				eq(hourlyWeather.date, date),
+				eq(hourlyWeather.latitude, latitude),
+				eq(hourlyWeather.longitude, longitude)
+			)
+		)
+		.orderBy(hourlyWeather.time);
 }

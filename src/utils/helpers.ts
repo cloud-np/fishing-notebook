@@ -34,6 +34,14 @@ export namespace Helpers {
 	};
 }
 
+/**
+ * Round coordinates to 4 decimal places for consistent storage and querying
+ * 4 decimal places gives ~11 meter precision which is sufficient for weather data
+ */
+export const roundCoordinate = (coord: number): number => {
+	return Math.round(coord * 10000) / 10000;
+};
+
 export const userValueToPosition = (dmsString: string | undefined): number[] | undefined => {
 	if (!dmsString) return undefined;
 

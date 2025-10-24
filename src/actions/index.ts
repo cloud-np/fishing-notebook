@@ -4,6 +4,7 @@ import { calendar } from "./calendar/calendar";
 import { maps } from "./maps/maps";
 import { trip } from "./trip/trip";
 import { location } from "./location/location";
+import { weather } from "./weather/weather";
 import { getRateLimiter, getDuplicateDetector } from "src/actions/contact/middlewares";
 
 // TODO: We need a better pattern for this
@@ -21,4 +22,5 @@ export const server = {
 	maps,
 	trip,
 	location,
+	weather,
 };
