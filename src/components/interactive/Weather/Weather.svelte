@@ -7,6 +7,8 @@
 	import Wind from "phosphor-svelte/lib/Wind";
 	import CloudRain from "phosphor-svelte/lib/CloudRain";
 	import Gauge from "phosphor-svelte/lib/Gauge";
+	import Skeleton from "@components/common/Skeleton.svelte";
+	import NoData from "@components/common/NoData.svelte";
 
 	interface Props {
 		latitude: number;
@@ -18,6 +20,25 @@
 	let weatherData = $state<HourlyWeather[]>([]);
 	let isLoading = $state(true);
 	let selectedHour = $state<HourlyWeather | null>(null);
+	let averages = $derived.by(() => {
+		if (weatherData.length === 0) return undefined;
+
+		const sum = weatherData.reduce((acc, hour) => ({
+			temperature: acc.temperature + (hour.temperature ?? 0),
+			windSpeed: acc.windSpeed + (hour.windSpeed ?? 0),
+			cloudCover: acc.cloudCover + (hour.cloudCover ?? 0),
+			pressure: acc.pressure + (hour.surfacePressure ?? 0),
+		}), { temperature: 0, windSpeed: 0, cloudCover: 0, pressure: 0 });
+
+		const count = weatherData.length;
+		return {
+			temperature: (sum.temperature / count).toFixed(1),
+			windSpeed: (sum.windSpeed / count).toFixed(1),
+			cloudCover: (sum.cloudCover / count).toFixed(0),
+			pressure: (sum.pressure / count).toFixed(0),
+		};
+	});
+
 
 	const fetchWeather = async (date: string) => {
 		const { data, error } = await actions.weather.getByDate({
@@ -49,25 +70,6 @@
 		return directions[index];
 	};
 
-	const getAverageForDay = (data: HourlyWeather[]) => {
-		if (data.length === 0) return null;
-
-		const sum = data.reduce((acc, hour) => ({
-			temperature: acc.temperature + (hour.temperature ?? 0),
-			windSpeed: acc.windSpeed + (hour.windSpeed ?? 0),
-			cloudCover: acc.cloudCover + (hour.cloudCover ?? 0),
-			pressure: acc.pressure + (hour.surfacePressure ?? 0),
-		}), { temperature: 0, windSpeed: 0, cloudCover: 0, pressure: 0 });
-
-		const count = data.length;
-		return {
-			temperature: (sum.temperature / count).toFixed(1),
-			windSpeed: (sum.windSpeed / count).toFixed(1),
-			cloudCover: (sum.cloudCover / count).toFixed(0),
-			pressure: (sum.pressure / count).toFixed(0),
-		};
-	};
-
 	onMount(async () => {
 		// Fetch weather data for the trip
 		const data = await fetchWeather(date) as HourlyWeather[];
@@ -86,6 +88,10 @@
 			selectedHour = weatherData[0];
 		}
 	});
+
+	const statClasses = "w-35 h-30 flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10";
+
+	const detailedStaClasses = "grow-0 min-w-0 w-40 p-4 bg-background rounded-lg border border-dark-10";
 </script>
 
 <div class="border-t border-dark-10 pt-6 mb-6">
@@ -94,142 +100,153 @@
 		Weather Conditions
 	</h3>
 
-	{#if isLoading}
-		<div class="text-muted-foreground text-sm">Loading weather data...</div>
-	{:else if weatherData.length === 0}
-		<div class="text-muted-foreground text-sm">No weather data available</div>
-	{:else}
-		<!-- Average Day Summary -->
-		{@const averages = getAverageForDay(weatherData)}
-		{#if averages}
-			<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-				<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10">
+	<!-- Average Day Summary -->
+	<div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
+		<div class={statClasses}>
+			<Skeleton {isLoading}>
+				<div>
 					<Thermometer class="size-6 text-muted-foreground" />
 					<div>
 						<p class="text-xs text-muted-foreground">Avg Temp</p>
-						<p class="text-lg font-semibold text-foreground">{averages.temperature}°C</p>
+						<p class="text-lg font-semibold text-foreground">°C</p>
+
+						<NoData data={averages?.temperature} class="text-lg font-semibold text-foreground">
+							°C
+						</NoData>
 					</div>
 				</div>
-
-				<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10">
-					<Wind class="size-6 text-muted-foreground" />
-					<div>
-						<p class="text-xs text-muted-foreground">Avg Wind</p>
-						<p class="text-lg font-semibold text-foreground">{averages.windSpeed} km/h</p>
-					</div>
-				</div>
-
-				<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10">
-					<CloudRain class="size-6 text-muted-foreground" />
-					<div>
-						<p class="text-xs text-muted-foreground">Avg Cloud</p>
-						<p class="text-lg font-semibold text-foreground">{averages.cloudCover}%</p>
-					</div>
-				</div>
-
-				<div class="flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10">
-					<Gauge class="size-6 text-muted-foreground" />
-					<div>
-						<p class="text-xs text-muted-foreground">Avg Pressure</p>
-						<p class="text-lg font-semibold text-foreground">{averages.pressure} hPa</p>
-					</div>
-				</div>
-			</div>
-		{/if}
-
-		<!-- Hourly Selection -->
-		<div class="mb-4">
-			<label for="hour-select" class="text-sm text-muted-foreground mb-2 block">Select Hour:</label>
-			<select
-				id="hour-select"
-				bind:value={selectedHour}
-				class="w-full lg:w-auto px-4 py-2 bg-background border border-dark-10 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-			>
-				{#each weatherData as hour}
-					<option value={hour}>{formatTime(hour.time)}</option>
-				{/each}
-			</select>
+			</Skeleton>
 		</div>
 
-		<!-- Selected Hour Details -->
-		{#if selectedHour}
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-				<!-- Temperature -->
-				<div class="p-4 bg-background rounded-lg border border-dark-10">
-					<div class="flex items-center gap-2 mb-3">
-						<Thermometer class="size-5 text-muted-foreground" />
-						<h4 class="font-medium text-foreground">Temperature</h4>
-					</div>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Actual:</span>
-							<span class="font-medium text-foreground">{selectedHour.temperature?.toFixed(1) ?? 'N/A'}°C</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Feels Like:</span>
-							<span class="font-medium text-foreground">{selectedHour.feelsLike?.toFixed(1) ?? 'N/A'}°C</span>
-						</div>
-					</div>
+		<div class={statClasses}>
+			<Skeleton {isLoading}>
+				<Wind class="size-6 text-muted-foreground" />
+				<div>
+					<p class="text-xs text-muted-foreground">Avg Wind</p>
+					<NoData data={averages?.windSpeed} class="text-lg font-semibold text-foreground">
+						 km/h
+					</NoData>
 				</div>
+			</Skeleton>
+		</div>
 
-				<!-- Wind -->
-				<div class="p-4 bg-background rounded-lg border border-dark-10">
-					<div class="flex items-center gap-2 mb-3">
-						<Wind class="size-5 text-muted-foreground" />
-						<h4 class="font-medium text-foreground">Wind</h4>
-					</div>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Speed:</span>
-							<span class="font-medium text-foreground">{selectedHour.windSpeed?.toFixed(1) ?? 'N/A'} km/h</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Direction:</span>
-							<span class="font-medium text-foreground">{getWindDirection(selectedHour.windDirection ?? undefined)}</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Gusts:</span>
-							<span class="font-medium text-foreground">{selectedHour.windGusts?.toFixed(1) ?? 'N/A'} km/h</span>
-						</div>
-					</div>
+		<div class={statClasses}>
+			<Skeleton {isLoading}>
+				<CloudRain class="size-6 text-muted-foreground" />
+				<div>
+					<p class="text-xs text-muted-foreground">Avg Cloud</p>
+					<NoData data={averages?.cloudCover} class="text-lg font-semibold text-foreground">
+						%
+					</NoData>
 				</div>
+			</Skeleton>
+		</div>
 
-				<!-- Atmospheric -->
-				<div class="p-4 bg-background rounded-lg border border-dark-10">
-					<div class="flex items-center gap-2 mb-3">
-						<Gauge class="size-5 text-muted-foreground" />
-						<h4 class="font-medium text-foreground">Atmospheric</h4>
-					</div>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Pressure:</span>
-							<span class="font-medium text-foreground">{selectedHour.surfacePressure?.toFixed(0) ?? 'N/A'} hPa</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Cloud Cover:</span>
-							<span class="font-medium text-foreground">{selectedHour.cloudCover?.toFixed(0) ?? 'N/A'}%</span>
-						</div>
-					</div>
+		<div class={statClasses}>
+			<Skeleton {isLoading}>
+				<Gauge class="size-6 text-muted-foreground" />
+				<div>
+					<p class="text-xs text-muted-foreground">Avg Pressure</p>
+					<NoData data={averages?.pressure} class="text-lg font-semibold text-foreground">
+						hPa
+					</NoData>
 				</div>
+			</Skeleton>
+		</div>
+	</div>
 
-				<!-- Precipitation -->
-				<div class="p-4 bg-background rounded-lg border border-dark-10">
-					<div class="flex items-center gap-2 mb-3">
-						<CloudRain class="size-5 text-muted-foreground" />
-						<h4 class="font-medium text-foreground">Precipitation</h4>
+	<!-- Hourly Selection -->
+	<div class="mb-4">
+		<label for="hour-select" class="text-sm text-muted-foreground mb-2 block">Select Hour:</label>
+		<select
+			id="hour-select"
+			bind:value={selectedHour}
+			class="w-full lg:w-auto px-4 py-2 bg-background border border-dark-10 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+		>
+			{#each weatherData as hour}
+				<option value={hour}>{formatTime(hour.time)}</option>
+			{/each}
+		</select>
+	</div>
+
+	<!-- Selected Hour Details -->
+	{#if selectedHour}
+		<div class="flex flex-col sm:flex-row flex-wrap gap-4">
+			<!-- Temperature -->
+			<div class={detailedStaClasses}>
+				<div class="flex items-center gap-2 mb-3">
+					<Thermometer class="size-5 text-muted-foreground" />
+					<h4 class="font-medium text-foreground">Temperature</h4>
+				</div>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Actual:</span>
+						<span class="font-medium text-foreground">{selectedHour.temperature?.toFixed(1) ?? 'N/A'}°C</span>
 					</div>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Probability:</span>
-							<span class="font-medium text-foreground">{selectedHour.precipitationProbability?.toFixed(0) ?? 'N/A'}%</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Rain:</span>
-							<span class="font-medium text-foreground">{selectedHour.rain?.toFixed(1) ?? 'N/A'} mm</span>
-						</div>
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Feels Like:</span>
+						<span class="font-medium text-foreground">{selectedHour.feelsLike?.toFixed(1) ?? 'N/A'}°C</span>
 					</div>
 				</div>
 			</div>
+
+			<!-- Wind -->
+			<div class={detailedStaClasses}>
+				<div class="flex items-center gap-2 mb-3">
+					<Wind class="size-5 text-muted-foreground" />
+					<h4 class="font-medium text-foreground">Wind</h4>
+				</div>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Speed:</span>
+						<span class="font-medium text-foreground">{selectedHour.windSpeed?.toFixed(1) ?? 'N/A'} km/h</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Direction:</span>
+						<span class="font-medium text-foreground">{getWindDirection(selectedHour.windDirection ?? undefined)}</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Gusts:</span>
+						<span class="font-medium text-foreground">{selectedHour.windGusts?.toFixed(1) ?? 'N/A'} km/h</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Atmospheric -->
+			<div class={detailedStaClasses}>
+				<div class="flex items-center gap-2 mb-3">
+					<Gauge class="size-5 text-muted-foreground" />
+					<h4 class="font-medium text-foreground">Atmospheric</h4>
+				</div>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Pressure:</span>
+						<span class="font-medium text-foreground">{selectedHour.surfacePressure?.toFixed(0) ?? 'N/A'} hPa</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Cloud Cover:</span>
+						<span class="font-medium text-foreground">{selectedHour.cloudCover?.toFixed(0) ?? 'N/A'}%</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Precipitation -->
+			<div class={detailedStaClasses}>
+				<div class="flex items-center gap-2 mb-3">
+					<CloudRain class="size-5 text-muted-foreground" />
+					<h4 class="font-medium text-foreground">Precipitation</h4>
+				</div>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Probability:</span>
+						<span class="font-medium text-foreground">{selectedHour.precipitationProbability?.toFixed(0) ?? 'N/A'}%</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-muted-foreground">Rain:</span>
+						<span class="font-medium text-foreground">{selectedHour.rain?.toFixed(1) ?? 'N/A'} mm</span>
+					</div>
+				</div>
+			</div>
+		</div>
 		{/if}
-	{/if}
 </div>

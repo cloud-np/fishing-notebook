@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import type { Trip } from "@types";
 	import MapPin from "phosphor-svelte/lib/MapPin";
 	import Clock from "phosphor-svelte/lib/Clock";
@@ -49,7 +50,8 @@
 	};
 </script>
 
-<div class="border-dark-10 bg-background-alt shadow-card mt-6 rounded-[15px] border p-6">
+<div transition:fly={{ x: -200, duration: 1000 }}
+	class="border-dark-10 bg-background-alt shadow-card mt-6 rounded-[15px] border p-6 max-w-[650px]">
 	<!-- Header -->
 	<div class="mb-6">
 		{#if trip.title}

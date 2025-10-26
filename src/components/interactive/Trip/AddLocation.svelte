@@ -73,7 +73,7 @@
 
 <!-- Location Selection -->
 <section class="flex flex-col gap-4">
-	<div class="flex items-center gap-2 mb-6">
+	<div class="flex items-center gap-2 mb-6 mt-6">
 		<input
 			id="maps-url"
 			type="text"

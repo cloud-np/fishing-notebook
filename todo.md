@@ -7,6 +7,8 @@
 * Make the data in trip details scrollable since later on we will have marine data as well.
 * Make the weather data responsive they are overflowing the card.
 * When showing the weather specific hours should be shown first.
+* Add proper responses codes for constrains: Failed to validate: [ { "code": "too_big", "maximum": 200, "type": "string", "inclusive": true, "exact": false, "message": "String must contain at most 200 character(s)", "path": [ "location", "name" ] } ]
+* FE "rate limiter", implement isLoading per action/comp.
 
 # BE
 * Use the marine forecast API to get data regarding the weather for each trip.

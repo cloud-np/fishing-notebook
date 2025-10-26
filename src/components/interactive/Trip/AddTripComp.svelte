@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CalendarDate } from "@internationalized/date";
+	import { fade } from 'svelte/transition';
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
@@ -158,13 +159,18 @@
 									Save
 								</AlertDialog.Action>
 							</div>
+							{#if submitError}
+								<div transition:fade class="message error-message">
+									{submitError}
+								</div>
+							{/if}
 						</AlertDialog.Content>
 					</AlertDialog.Portal>
 				</AlertDialog.Root>
 			</section>
 		{:else}
-			<section class="flex flex-col gap-8 sm:flex-row ">
-				<div class="flex flex-col gap-2 border border-border-input rounded-card-sm p-4 pr-8 relative">
+			<section class="flex flex-col gap-8 sm:flex-row">
+				<div class="flex flex-col gap-2 max-w-full border border-border-input rounded-card-sm p-4 pr-8 relative text-wrap overflow-hidden whitespace-nowrap text-ellipsis">
 					{selectedLocation.name || `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
 					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationState.reset()}>
 						<Trash />
