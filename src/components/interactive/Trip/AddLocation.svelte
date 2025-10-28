@@ -4,7 +4,7 @@
 	import { Popover } from "bits-ui";
 	import { userValueToPosition } from "@utils/helpers";
 	import Rating from "@components/interactive/Rating/Rating.svelte";
-	import { locationState } from "@components/interactive/Trip/trip.shared.svelte";
+	import { locationService } from "@client-libs/store.svelte";
 	import MapPin from "phosphor-svelte/lib/MapPin";
 
 	// Local state
@@ -37,8 +37,8 @@
 			}
 
 			if (data?.coordinates) {
-				locationState.location.latitude = data.coordinates.latitude;
-				locationState.location.longitude = data.coordinates.longitude;
+				locationService.location.latitude = data.coordinates.latitude;
+				locationService.location.longitude = data.coordinates.longitude;
 				console.log('Coordinates extracted:', data.coordinates);
 				urlError = "";
 			}
@@ -52,8 +52,8 @@
 
 	// Handle map click to update coordinates
 	function handleMapClick(lat: number, lng: number) {
-		locationState.location.latitude = lat;
-		locationState.location.longitude = lng;
+		locationService.location.latitude = lat;
+		locationService.location.longitude = lng;
 	}
 
 	function handlePaste(event: ClipboardEvent) {
@@ -63,8 +63,8 @@
 		// Kinda hacky, we wait for the input from the user to be processed
 		// then we set the values in an async manner.
 		setTimeout(() => {
-			locationState.location.latitude = parsedValue[0];
-			locationState.location.longitude = parsedValue[1];
+			locationService.location.latitude = parsedValue[0];
+			locationService.location.longitude = parsedValue[1];
 		}, 0);
 	}
 
@@ -77,7 +77,7 @@
 		<input
 			id="maps-url"
 			type="text"
-			bind:value={locationState.location.name}
+			bind:value={locationService.location.name}
 			placeholder="Location Name"
 			class={inputClasses}
 		/>
@@ -121,7 +121,7 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={locationState.location.latitude}
+							bind:value={locationService.location.latitude}
 							onpaste={handlePaste}
 							class={inputClasses}
 							placeholder="e.g., 37.977217"
@@ -133,7 +133,7 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={locationState.location.longitude}
+							bind:value={locationService.location.longitude}
 							class={inputClasses}
 							placeholder="e.g., 23.730278"
 						/>
@@ -153,13 +153,13 @@
 			>
 				<div class="w-full h-full">
 					<Map
-						location={{ latitude: locationState.location.latitude || DEFAULT_LOCATION.latitude, longitude: locationState.location.longitude || DEFAULT_LOCATION.longitude }}
+						location={{ latitude: locationService.location.latitude || DEFAULT_LOCATION.latitude, longitude: locationService.location.longitude || DEFAULT_LOCATION.longitude }}
 						zoom={9}
 						markerMarkup={`
 							<div class="marker">
 								<p><strong>Fishing Spot</strong></p>
-								<p>Lat: ${(locationState.location.latitude || DEFAULT_LOCATION.latitude).toFixed(6)}</p>
-								<p>Lng: ${(locationState.location.longitude || DEFAULT_LOCATION.longitude).toFixed(6)}</p>
+								<p>Lat: ${(locationService.location.latitude || DEFAULT_LOCATION.latitude).toFixed(6)}</p>
+								<p>Lng: ${(locationService.location.longitude || DEFAULT_LOCATION.longitude).toFixed(6)}</p>
 							</div>
 						`}
 						onMarkerPlace={handleMapClick}
@@ -172,15 +172,15 @@
 	<div class="flex flex-col gap-4 justify-center items-center">
 		<div class="flex flex-col justify-center items-center">
 			<h3>Car Difficulty</h3>
-			<Rating bind:value={locationState.location.carDifficulty} />
+			<Rating bind:value={locationService.location.carDifficulty} />
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Walk Difficulty</h3>
-			<Rating bind:value={locationState.location.walkDifficulty} />
+			<Rating bind:value={locationService.location.walkDifficulty} />
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Location Overall Rating</h3>
-			<Rating bind:value={locationState.location.rating} />
+			<Rating bind:value={locationService.location.rating} />
 		</div>
 	</div>
 </section>

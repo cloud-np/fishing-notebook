@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Calendar from "@components/interactive/Calendar/Calendar.svelte";
 	import TripDetails from "@components/interactive/Trip/TripDetails.svelte";
-	import { tripState, weatherState } from "@components/interactive/Trip/trip.shared.svelte";
+	import { tripService } from "@client-libs/store.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 
-	let selectedTrip = $derived(tripState.trip);
+	let selectedTrip = $derived(tripService.trip);
 </script>
 
 <div class="mb-6 flex justify-end flex-col px-6">

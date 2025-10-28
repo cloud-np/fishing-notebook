@@ -4,11 +4,12 @@
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
-	import { locationState } from "@components/interactive/Trip/trip.shared.svelte";
+	import { locationService } from "@client-libs/store.svelte";
 	import Rating from "../Rating/Rating.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 	import ArrowLeft from "phosphor-svelte/lib/ArrowLeft";
 	import SelectFromLocations from "./SelectFromLocations.svelte";
+	import AddTime from "./AddTime.svelte";
 	import { AlertDialog } from "bits-ui";
 	import Trash from "phosphor-svelte/lib/Trash";
 
@@ -16,10 +17,12 @@
 	let selectedDate = $state<CalendarDate | undefined>(undefined);
 	let tripNotes = $state("");
 	let rating = $state(0);
+	let startTime = $state<string | undefined>(undefined);
+	let endTime = $state<string | undefined>(undefined);
 	let isSubmitting = $state(false);
 	let submitError = $state("");
 	let submitSuccess = $state(false);
-	let selectedLocation = $derived(locationState.location ?? { latitude: 20, longitude: 20 });
+	let selectedLocation = $derived(locationService.location ?? { latitude: 20, longitude: 20 });
 
 	// Handle saving location when user clicks Continue in dialog
 	async function handleSaveLocation() {
@@ -63,6 +66,8 @@
 					rating: selectedLocation.rating === 0 ? undefined : selectedLocation.rating,
 				},
 				tripDate: selectedDate.toString(),
+				startTime: startTime,
+				endTime: endTime,
 				rating: rating === 0 ? undefined : rating,
 				notes: tripNotes || undefined,
 			});
@@ -77,10 +82,12 @@
 
 				// Reset form after successful submission
 				setTimeout(() => {
-					locationState.reset();
+					locationService.reset();
 					selectedDate = undefined;
 					tripNotes = "";
 					rating = 0;
+					startTime = undefined;
+					endTime = undefined;
 					submitSuccess = false;
 				}, 2000);
 			}
@@ -112,7 +119,12 @@
 			<DatePicker bind:value={selectedDate} />
 		</section>
 
-		{#if !locationState.isSet() || isAddLocationOpen}
+		<!-- Time Range Selection -->
+		<section class="flex flex-col gap-4">
+			<AddTime bind:startTime bind:endTime />
+		</section>
+
+		{#if !locationService.isSet || isAddLocationOpen}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2">
 					<h1>Select Previous Location</h1>
@@ -172,7 +184,7 @@
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2 max-w-full border border-border-input rounded-card-sm p-4 pr-8 relative text-wrap overflow-hidden whitespace-nowrap text-ellipsis">
 					{selectedLocation.name || `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
-					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationState.reset()}>
+					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationService.reset()}>
 						<Trash />
 					</button>
 				</div>

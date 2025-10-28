@@ -2,7 +2,6 @@ import { ActionError, defineAction } from "astro:actions";
 import { getWeatherByDateSchema } from "./weather.validation";
 import { createAuthorizedHandler } from "src/actions/auth";
 import { getWeatherService } from "@libs/services";
-import type { HourlyWeatherSelect } from "@db/weather/hourlyWeather";
 
 export const weather = {
 	getByDate: defineAction({

@@ -2,7 +2,7 @@
 	import type { HourlyWeather } from "@types";
 	import { actions } from "astro:actions";
 	import { onMount } from "svelte";
-	import { weatherState } from "../Trip/trip.shared.svelte";
+	import { weatherService } from "@client-libs/store.svelte";
 	import Thermometer from "phosphor-svelte/lib/Thermometer";
 	import Wind from "phosphor-svelte/lib/Wind";
 	import CloudRain from "phosphor-svelte/lib/CloudRain";
@@ -90,7 +90,6 @@
 	});
 
 	const statClasses = "w-35 h-30 flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10";
-
 	const detailedStaClasses = "grow-0 min-w-0 w-40 p-4 bg-background rounded-lg border border-dark-10";
 </script>
 
@@ -108,8 +107,6 @@
 					<Thermometer class="size-6 text-muted-foreground" />
 					<div>
 						<p class="text-xs text-muted-foreground">Avg Temp</p>
-						<p class="text-lg font-semibold text-foreground">°C</p>
-
 						<NoData data={averages?.temperature} class="text-lg font-semibold text-foreground">
 							°C
 						</NoData>
@@ -248,5 +245,5 @@
 				</div>
 			</div>
 		</div>
-		{/if}
+	{/if}
 </div>
