@@ -9,10 +9,6 @@ export const weather = {
 		input: getWeatherByDateSchema,
 		handler: createAuthorizedHandler(async input => {
 			try {
-				// Add artificial delay for testing
-				await new Promise(resolve => setTimeout(resolve, 2000));
-
-				console.log("Fetching weather data...");
 				const weatherData = await getWeatherService().fetchHourlyWeather(
 					input.date,
 					input.latitude,

@@ -60,7 +60,6 @@
 	    const deps = { latitude, longitude, date };
 
 	    const fetchWeather = async () => {
-	        console.log("Fetching weather for:", deps.longitude, deps.latitude, deps.date);
 	        isLoading = true;
 	        weatherData = await weatherService.getWeatherByDate(deps.longitude, deps.latitude, deps.date);
 	        isLoading = false;

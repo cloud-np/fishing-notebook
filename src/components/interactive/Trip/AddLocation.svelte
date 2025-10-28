@@ -39,7 +39,6 @@
 			if (data?.coordinates) {
 				locationService.location.latitude = data.coordinates.latitude;
 				locationService.location.longitude = data.coordinates.longitude;
-				console.log('Coordinates extracted:', data.coordinates);
 				urlError = "";
 			}
 		} catch (error) {
