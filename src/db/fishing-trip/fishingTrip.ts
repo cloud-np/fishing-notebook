@@ -18,26 +18,6 @@ export async function getTripById(tripId: number) {
 }
 
 /**
- * Get fishing trip with weather and location data
- */
-export async function getTripWithWeather(tripId: number) {
-	const result = await db
-		.select({
-			trip: fishingTrips,
-			weather: dailyWeather,
-			locationName: locations.name,
-			locationLatitude: locations.latitude,
-			locationLongitude: locations.longitude,
-		})
-		.from(fishingTrips)
-		.leftJoin(dailyWeather, eq(fishingTrips.id, dailyWeather.tripId))
-		.leftJoin(locations, eq(fishingTrips.locationId, locations.id))
-		.where(eq(fishingTrips.id, tripId));
-
-	return result[0];
-}
-
-/**
  * Get all trips for a user
  */
 export async function getTripsByUserId(userId: string, limit?: number) {

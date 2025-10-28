@@ -2,7 +2,7 @@ import { ActionError, defineAction } from "astro:actions";
 import { db } from "@db/index";
 import { locations } from "@db/schema";
 import { createAuthorizedHandler } from "src/actions/auth";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "astro:schema";
 import type { Location } from "@types";
 import { createOrUpdateLocation } from "@db/locations/locations";
@@ -20,7 +20,7 @@ export const location = {
 	createLocation: defineAction({
 		accept: "json",
 		input: createLocationSchema,
-		handler: createAuthorizedHandler(async (input, context, session) => {
+		handler: createAuthorizedHandler(async (input, _context, session) => {
 			try {
 				const location = await createOrUpdateLocation(
 					{
@@ -54,7 +54,7 @@ export const location = {
 	}),
 	getLocations: defineAction({
 		accept: "json",
-		handler: createAuthorizedHandler(async (_, context, session) => {
+		handler: createAuthorizedHandler(async (_, _context, session) => {
 			try {
 				const locationsData = await db.query.locations.findMany({
 					where: eq(locations.userId, session.user.id),

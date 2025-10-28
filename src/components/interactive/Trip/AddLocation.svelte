@@ -4,7 +4,7 @@
 	import { Popover } from "bits-ui";
 	import { userValueToPosition } from "@utils/helpers";
 	import Rating from "@components/interactive/Rating/Rating.svelte";
-	import { locationService } from "@client-libs/store.svelte";
+	import { locationService } from "@client-libs/store/store.svelte";
 	import MapPin from "phosphor-svelte/lib/MapPin";
 
 	// Local state

@@ -14,6 +14,7 @@ const githubClientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CL
 const githubClientSecret = import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET || "";
 const betterAuthSecret = import.meta.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || "";
 const nodeEnv = import.meta.env.PROD ? "production" : "development";
+const trustedOrigins = ["http://localhost:4321", "https://fish.cloudnp.xyz"];
 
 console.log("=== Better Auth Configuration ===");
 console.log("Environment:", nodeEnv);
@@ -21,7 +22,7 @@ console.log("Base URL:", baseURL);
 console.log("GitHub Client ID:", githubClientId ? `${githubClientId.substring(0, 8)}...` : "NOT SET");
 console.log("GitHub Client Secret:", githubClientSecret ? "SET" : "NOT SET");
 console.log("Better Auth Secret:", betterAuthSecret ? "SET" : "NOT SET");
-console.log("Trusted Origins:", ["http://localhost:4321", "https://fish.cloudnp.xyz"]);
+console.log("Trusted Origins:", trustedOrigins);
 console.log("================================");
 
 export const auth = betterAuth({
@@ -34,8 +35,8 @@ export const auth = betterAuth({
 			verification: schema.verification,
 		},
 	}),
-	baseURL: baseURL,
-	trustedOrigins: ["http://localhost:4321", "https://fish.cloudnp.xyz"],
+	baseURL,
+	trustedOrigins,
 	account: {
 		accountLinking: {
 			enabled: true,
@@ -52,7 +53,7 @@ export const auth = betterAuth({
 	},
 	emailVerification: {
 		sendOnSignUp: false,
-		sendVerificationEmail: async ({ user, url, token }, request) => {
+		sendVerificationEmail: async ({ user, url, token: _token }, _request) => {
 			// console.log(`Sending verification email to ${user.email}: ${url}`);
 			await getEmailService().sendEmail({
 				name: user.name,

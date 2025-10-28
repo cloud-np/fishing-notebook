@@ -4,7 +4,7 @@
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
-	import { locationService } from "@client-libs/store.svelte";
+	import { locationService } from "@client-libs/store/store.svelte";
 	import Rating from "../Rating/Rating.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 	import ArrowLeft from "phosphor-svelte/lib/ArrowLeft";

@@ -90,7 +90,7 @@
 			const password = formData.get("password");
 			const name = formData.get("name");
 			const image = formData.get("image");
-			const { data, error } = await signUp.email(
+			const { data: _data, error: _error } = await signUp.email(
 				{
 					email: `${email ?? ""}`,
 					password: `${password ?? ""}`, // user password -> min 8 characters by default
@@ -98,11 +98,11 @@
 					image: `${image ?? ""}`, // User image URL (optional)
 				},
 				{
-					onRequest: ctx => {
+					onRequest: _ctx => {
 						//show loading
 						signupBtn.textContent = "Loading...";
 					},
-					onSuccess: ctx => {
+					onSuccess: _ctx => {
 						successMessage.textContent = "Επιτυχής εγγραφή! Ανακατεύθυνση...";
 						successMessage.classList.remove("hidden");
 

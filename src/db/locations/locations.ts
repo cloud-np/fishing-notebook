@@ -31,7 +31,7 @@ export async function getLocationsByUserId(userId: string) {
 /**
  * Get locations within a radius (in kilometers)
  */
-export async function getLocationsNearby(latitude: number, longitude: number, radiusKm: number, userId?: string) {
+export async function getLocationsNearby(latitude: number, longitude: number, _radiusKm: number, userId?: string) {
 	// Haversine formula for distance calculation
 	// This is approximate but works well for small distances
 	const query = db

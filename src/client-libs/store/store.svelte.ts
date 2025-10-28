@@ -1,33 +1,6 @@
 import type { Location, Trip, Weather, HourlyWeather } from "@types";
 import { actions } from "astro:actions";
-
-type Actions = typeof actions;
-
-// Method decorator to manage isBusy state
-function isBusy(target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-	const originalMethod = descriptor.value;
-
-	descriptor.value = function (this: { isBusy: boolean }, ...args: any[]) {
-		this.isBusy = true;
-		try {
-			const result = originalMethod.apply(this, args);
-			// Handle promises
-			if (result instanceof Promise) {
-				return result.finally(() => {
-					this.isBusy = false;
-				});
-			}
-			// Handle synchronous functions
-			this.isBusy = false;
-			return result;
-		} catch (error) {
-			this.isBusy = false;
-			throw error;
-		}
-	};
-
-	return descriptor;
-}
+import { isBusy, updateStore } from "./decorators";
 
 class LocationService {
 	location = $state<Partial<Location>>({
@@ -51,7 +24,7 @@ class LocationService {
 	}
 }
 
-class TripService<T extends keyof Actions> {
+class TripService {
 	trip = $state<Trip | undefined>(undefined);
 	isBusy = $state(false);
 
@@ -60,6 +33,7 @@ class TripService<T extends keyof Actions> {
 	}
 
 	@isBusy
+	@updateStore("trip")
 	async createTrip(trip: Trip & { location: Location }) {
 		return await actions.trip.createTrip({
 			location: {
@@ -84,18 +58,27 @@ class TripService<T extends keyof Actions> {
 class WeatherService {
 	weather = $state<Weather | undefined>(undefined);
 	hourlyWeather = $state<HourlyWeather[] | undefined>(undefined);
+	isBusy = $state(false);
 
 	set(newWeather: Weather | undefined) {
 		this.weather = newWeather;
 	}
 
 	@isBusy
-	async getWeatherByDate(location: Location, date: string) {
-		return await actions.weather.getByDate({
-			longitude: location.longitude,
-			latitude: location.latitude,
+	@updateStore("hourlyWeather")
+	async getWeatherByDate(longitude: number, latitude: number, date: string): Promise<HourlyWeather[]> {
+		const { data, error } = await actions.weather.getByDate({
+			longitude,
+			latitude,
 			date,
 		});
+
+		if (data && data.success) {
+			return data.data;
+		} else if (error) {
+			console.error("Failed to load weather:", error);
+		}
+		return [];
 	}
 
 	setHourlyWeather(newHourlyWeather: HourlyWeather[] | undefined) {

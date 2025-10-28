@@ -13,7 +13,7 @@ export const trip = {
 	createTrip: defineAction({
 		accept: "json",
 		input: createTripSchema,
-		handler: createAuthorizedHandler(async (input, context, session) => {
+		handler: createAuthorizedHandler(async (input, _context, session) => {
 			try {
 				// Use context.callAction to create or update the location
 				const [location] = await createOrUpdateLocation(
@@ -70,7 +70,7 @@ export const trip = {
 	}),
 	getTrips: defineAction({
 		accept: "json",
-		handler: createAuthorizedHandler(async (_, context, session) => {
+		handler: createAuthorizedHandler(async (_, _context, session) => {
 			try {
 				const dbTrips = await db.query.fishingTrips.findMany({
 					where: eq(fishingTrips.userId, session.user.id),
@@ -121,7 +121,7 @@ export const trip = {
 	getTripsByDate: defineAction({
 		accept: "json",
 		input: getTripsByDateSchema,
-		handler: createAuthorizedHandler(async (input, context, session) => {
+		handler: createAuthorizedHandler(async (input, _context, session) => {
 			try {
 				const dbTrips = await db.query.fishingTrips.findMany({
 					where: and(

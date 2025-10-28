@@ -1,20 +1,20 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
 import DashboardComp from "@components/containers/DashboardComp.svelte";
-import { Moon } from "@libs/lunar";
+// import { Moon } from "@libs/lunar";
 
 export const prerender = false;
 
-const date = new Date();
+// const date = new Date();
 
-const age = Moon.lunarAge(date).toFixed(2);
-const agePercent = `${(Moon.lunarAgePercent(date) * 100).toFixed(2)}%`;
-const lunation = Moon.lunationNumber(date);
-const distance = Moon.lunarDistance(date).toFixed(2);
-const phase = Moon.lunarPhase(date);
-const phaseEmoji = Moon.lunarPhaseEmoji(date);
-const isWaxing = Moon.isWaxing(date);
-const isWaning = Moon.isWaning(date);
+// const age = Moon.lunarAge(date).toFixed(2);
+// const agePercent = `${(Moon.lunarAgePercent(date) * 100).toFixed(2)}%`;
+// const lunation = Moon.lunationNumber(date);
+// const distance = Moon.lunarDistance(date).toFixed(2);
+// const phase = Moon.lunarPhase(date);
+// const phaseEmoji = Moon.lunarPhaseEmoji(date);
+// const isWaxing = Moon.isWaxing(date);
+// const isWaning = Moon.isWaning(date);
 
 const seo = {
 	title: "Fishing Notebook - Το Ημερολόγιο του Ψαρά",

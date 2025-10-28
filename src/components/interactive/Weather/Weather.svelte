@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { HourlyWeather } from "@types";
-	import { actions } from "astro:actions";
 	import { onMount } from "svelte";
-	import { weatherService } from "@client-libs/store.svelte";
+	import { weatherService } from "@client-libs/store/store.svelte";
 	import Thermometer from "phosphor-svelte/lib/Thermometer";
 	import Wind from "phosphor-svelte/lib/Wind";
 	import CloudRain from "phosphor-svelte/lib/CloudRain";
@@ -39,21 +38,6 @@
 		};
 	});
 
-
-	const fetchWeather = async (date: string) => {
-		const { data, error } = await actions.weather.getByDate({
-			longitude,
-			latitude,
-			date,
-		});
-
-		if (data && data.success) {
-			return data.data;
-		} else if (error) {
-			console.error("Failed to load weather:", error);
-		}
-	};
-
 	const formatTime = (timeString: string) => {
 		const date = new Date(timeString);
 		return date.toLocaleTimeString('en-US', {
@@ -72,7 +56,7 @@
 
 	onMount(async () => {
 		// Fetch weather data for the trip
-		const data = await fetchWeather(date) as HourlyWeather[];
+		const data = await weatherService.getWeatherByDate(longitude, latitude, date);
 		weatherData = data;
 		// Set the first hour as selected by default
 		if (data && data.length > 0) {
@@ -80,7 +64,7 @@
 		}
 		isLoading = false;
 		// Update the weather state with the fetched data
-		weatherState.setHourlyWeather(data);
+		weatherService.setHourlyWeather(data);
 	});
 
 	$effect(() => {

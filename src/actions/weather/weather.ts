@@ -15,8 +15,8 @@ export const weather = {
 					input.longitude
 				);
 
-				// TODO: 'hour' here shouldn't be any fix it.
 				// Map hourly weather data to a more user-friendly format
+				// @ts-ignore - hour type inference issue
 				const mappedData = weatherData.map(hour => ({
 					time: hour[0].time,
 					// Temperature

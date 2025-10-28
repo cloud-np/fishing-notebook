@@ -2,15 +2,15 @@ import { ActionError, defineAction } from "astro:actions";
 import { createAuthorizedHandler } from "src/actions/auth";
 import { dateSchema } from "./calendar.validation";
 
-let lastFetchedPosition: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
+// let lastFetchedPosition: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
 
 export const calendar = {
 	fetchDay: defineAction({
 		accept: "json",
 		input: dateSchema,
-		handler: createAuthorizedHandler(async (input, context) => {
+		handler: createAuthorizedHandler(async (input, _context) => {
 			console.log("Checking date:", input.date);
-			const { date, latitude, longitude } = input;
+			const { date: _date, latitude, longitude } = input;
 			try {
 				// Example coordinates (you'll need to get these from the location)
 
@@ -33,7 +33,7 @@ export const calendar = {
 				// 	};
 				// }
 				// const weatherData = await fetchWeatherData(latitude, longitude, input.date);
-				lastFetchedPosition = { latitude, longitude };
+				// lastFetchedPosition = { latitude, longitude };
 
 				return {
 					success: true,

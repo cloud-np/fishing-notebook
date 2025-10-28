@@ -7,7 +7,7 @@
 	import { actions } from "astro:actions";
 	import { onMount } from "svelte";
 	import type { TripsByDate } from "@types";
-	import { tripService } from "@client-libs/store.svelte";
+	import { tripService } from "@client-libs/store/store.svelte";
 
 	let currentDate = $state(today(getLocalTimeZone()));
 	let monthTrips = $state<TripsByDate>({});
