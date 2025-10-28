@@ -9,6 +9,10 @@ export const weather = {
 		input: getWeatherByDateSchema,
 		handler: createAuthorizedHandler(async input => {
 			try {
+				// Add artificial delay for testing
+				await new Promise(resolve => setTimeout(resolve, 2000));
+
+				console.log("Fetching weather data...");
 				const weatherData = await getWeatherService().fetchHourlyWeather(
 					input.date,
 					input.latitude,
@@ -17,7 +21,7 @@ export const weather = {
 
 				// Map hourly weather data to a more user-friendly format
 				// @ts-ignore - hour type inference issue
-				const mappedData = weatherData.map(hour => ({
+				const mappedData = weatherData.map((hour: any) => ({
 					time: hour[0].time,
 					// Temperature
 					temperature: hour[0].temperature2m,
@@ -77,7 +81,7 @@ export const weather = {
 				return {
 					success: true,
 					message: "Weather data retrieved successfully!",
-					data: mappedData,
+					weather: mappedData,
 				};
 			} catch (error) {
 				if (error instanceof ActionError) {

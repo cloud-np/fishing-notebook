@@ -1,28 +1,47 @@
 // Method decorator to manage isBusy state
-// The class must have an isBusy property
-export function isBusy<TThis extends { isBusy: boolean }, TArgs extends any[], TReturn>(
-	originalMethod: (this: TThis, ...args: TArgs) => TReturn,
-	_context: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => TReturn>
-) {
-	function replacementMethod(this: TThis, ...args: TArgs): TReturn | Promise<TReturn> {
-		this.isBusy = true;
-		try {
-			const result = originalMethod.call(this, ...args);
-			// Handle promises
-			if (result instanceof Promise) {
-				return result.finally(() => {
-					this.isBusy = false;
-				});
+// Manages its own internal busy state, no class property required
+// If argumentNames are provided, caches promises based on the values of those arguments
+// If no argumentNames are provided, uses simple busy state (previous behavior)
+export function isBusy<TThis extends WeakKey, TArgs extends any[], TReturn>(rateLimit?: number) {
+	return function (
+		originalMethod: (this: TThis, ...args: TArgs) => TReturn,
+		context: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => TReturn>
+	) {
+		// Map to store pending promises by cache key
+		const pendingPromises = new Map<string, Promise<TReturn>>();
+
+		function replacementMethod(this: TThis, ...args: TArgs): TReturn | Promise<TReturn> {
+			// Create a cache key based on specified argument names
+			const cacheKey = args.join("-");
+
+			const existingPromise = pendingPromises.get(cacheKey);
+			if (existingPromise) {
+				return existingPromise;
 			}
-			// Handle synchronous functions
-			this.isBusy = false;
-			return result;
-		} catch (error) {
-			this.isBusy = false;
-			throw error;
+
+			try {
+				const result = originalMethod.call(this, ...args);
+
+				// Handle promises
+				if (result instanceof Promise) {
+					const promise = result.finally(() => {
+						pendingPromises.delete(cacheKey);
+					});
+
+					pendingPromises.set(cacheKey, promise);
+					return promise;
+				}
+
+				// Handle synchronous functions
+				// TODO: This shouldn't be the case ever
+				throw new Error("We should never use synchronous methods for isBusy");
+			} catch (error) {
+				pendingPromises.delete(cacheKey);
+				throw error;
+			}
 		}
-	}
-	return replacementMethod as typeof originalMethod;
+		return replacementMethod as typeof originalMethod;
+	};
 }
 
 // Decorator factory to update a store property with the method's return value

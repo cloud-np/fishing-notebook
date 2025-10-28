@@ -61,3 +61,5 @@ export interface Weather {
 	windSpeed: number;
 	description: string;
 }
+
+export type WeatherUniqKey = `${number}-${number}-${string}`;

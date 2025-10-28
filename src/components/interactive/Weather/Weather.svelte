@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { HourlyWeather } from "@types";
-	import { onMount } from "svelte";
 	import { weatherService } from "@client-libs/store/store.svelte";
 	import Thermometer from "phosphor-svelte/lib/Thermometer";
 	import Wind from "phosphor-svelte/lib/Wind";
@@ -16,9 +15,11 @@
 	}
 
 	let { latitude, longitude, date }: Props = $props();
+	let initialized = $state(false);
 	let weatherData = $state<HourlyWeather[]>([]);
 	let isLoading = $state(true);
-	let selectedHour = $state<HourlyWeather | null>(null);
+	let selectedHour = $derived(weatherData[0]);
+
 	let averages = $derived.by(() => {
 		if (weatherData.length === 0) return undefined;
 
@@ -54,23 +55,22 @@
 		return directions[index];
 	};
 
-	onMount(async () => {
-		// Fetch weather data for the trip
-		const data = await weatherService.getWeatherByDate(longitude, latitude, date);
-		weatherData = data;
-		// Set the first hour as selected by default
-		if (data && data.length > 0) {
-			selectedHour = data[0];
-		}
-		isLoading = false;
-		// Update the weather state with the fetched data
-		weatherService.setHourlyWeather(data);
-	});
-
 	$effect(() => {
-		if (weatherData.length > 0 && !selectedHour) {
-			selectedHour = weatherData[0];
-		}
+	    // Track these values
+	    const deps = { latitude, longitude, date };
+
+	    const fetchWeather = async () => {
+	        console.log("Fetching weather for:", deps.longitude, deps.latitude, deps.date);
+	        isLoading = true;
+	        weatherData = await weatherService.getWeatherByDate(deps.longitude, deps.latitude, deps.date);
+	        isLoading = false;
+	    };
+
+	    if (!initialized) {
+	        initialized = true;
+	    }
+
+	    fetchWeather();
 	});
 
 	const statClasses = "w-35 h-30 flex items-center gap-3 p-3 bg-background rounded-lg border border-dark-10";

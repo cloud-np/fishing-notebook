@@ -1,4 +1,4 @@
-import type { Location, Trip, Weather, HourlyWeather } from "@types";
+import type { Location, Trip, WeatherUniqKey, HourlyWeather } from "@types";
 import { actions } from "astro:actions";
 import { isBusy, updateStore } from "./decorators";
 
@@ -8,7 +8,6 @@ class LocationService {
 		walkDifficulty: 0,
 		rating: 0,
 	});
-	isBusy = $state(false);
 	isSet = $derived(!!this.location?.latitude && !!this.location.longitude);
 
 	reset() {
@@ -26,7 +25,6 @@ class LocationService {
 
 class TripService {
 	trip = $state<Trip | undefined>(undefined);
-	isBusy = $state(false);
 
 	set(newTrip: Trip | undefined) {
 		this.trip = newTrip;
@@ -35,7 +33,7 @@ class TripService {
 	@isBusy
 	@updateStore("trip")
 	async createTrip(trip: Trip & { location: Location }) {
-		return await actions.trip.createTrip({
+		const { data, error } = await actions.trip.createTrip({
 			location: {
 				name: trip.location.name,
 				latitude: trip.location.latitude,
@@ -52,21 +50,26 @@ class TripService {
 			endTime: trip.endTime,
 			successRating: trip.rating,
 		});
+
+		if (data && data.success) {
+			return data.trip;
+		} else if (error) {
+			console.error("Failed to load trip:", error);
+		}
+		return [];
 	}
 }
 
 class WeatherService {
-	weather = $state<Weather | undefined>(undefined);
 	hourlyWeather = $state<HourlyWeather[] | undefined>(undefined);
-	isBusy = $state(false);
+	hourlyWeatherByKey = $state<Record<WeatherUniqKey, HourlyWeather[] | undefined>>({});
 
-	set(newWeather: Weather | undefined) {
-		this.weather = newWeather;
-	}
-
-	@isBusy
-	@updateStore("hourlyWeather")
+	@isBusy(10)
 	async getWeatherByDate(longitude: number, latitude: number, date: string): Promise<HourlyWeather[]> {
+		const key = `${longitude}-${latitude}-${date}`;
+		if (this.hourlyWeatherByKey[key]) {
+			return this.hourlyWeatherByKey[key];
+		}
 		const { data, error } = await actions.weather.getByDate({
 			longitude,
 			latitude,
@@ -74,7 +77,8 @@ class WeatherService {
 		});
 
 		if (data && data.success) {
-			return data.data;
+			this.hourlyWeatherByKey[key] = data.weather;
+			return data.weather;
 		} else if (error) {
 			console.error("Failed to load weather:", error);
 		}

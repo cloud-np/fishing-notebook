@@ -65,16 +65,11 @@
 	</div>
 
 	{#if trip.location?.longitude && trip.location.latitude}
-		{trip.location.longitude}
-		{trip.location.latitude}
-		{trip.tripDate}
-		<div>
-			<Weather
-				longitude={trip.location.longitude}
-				latitude={trip.location.latitude}
-				date={trip.tripDate}
-			/>
-		</div>
+		<Weather
+			longitude={trip.location.longitude}
+			latitude={trip.location.latitude}
+			date={trip.tripDate}
+		/>
 	{/if}
 
 	<!-- Time Information -->
