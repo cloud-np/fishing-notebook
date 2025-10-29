@@ -1,5 +1,9 @@
 import type { Location } from "./Location.model";
 
+export interface TripWithLocation extends Trip {
+	location: Location;
+}
+
 export interface Trip {
 	tripDate: string;
 	startTime?: string;

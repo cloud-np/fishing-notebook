@@ -1,0 +1,42 @@
+---
+import AddTripComp from "@components/interactive/Trip/AddTripComp.svelte";
+import PageLayout from "@layouts/PageLayout.astro";
+import { actions } from "astro:actions";
+
+export const prerender = false;
+
+const { date } = Astro.params;
+
+if (!date) {
+	return Astro.redirect("/dashboard");
+}
+
+// Fetch the trip for this specific date
+const { data, error } = await Astro.callAction(actions.trip.getTripsByDate, {
+	startDate: date,
+	endDate: date,
+	limit: 1,
+});
+
+if (error || !data?.trips || !data.trips[date]) {
+	// If no trip found for this date, redirect to dashboard
+	return Astro.redirect("/dashboard");
+}
+
+const trip = data.trips[date];
+
+const seo = {
+	title: `Edit Trip - ${date} - Fishing Notebook`,
+	description: "Edit your fishing trip details",
+	keywords: "fishing, ψάρεμα, fishing journal, edit trip",
+};
+---
+
+<PageLayout seo={seo}>
+	<div class="flex flex-col items-center justify-center gap-8">
+		<!-- TODO: There is a hydration mismatch because of the internal comps
+			once fixed update to client:load
+		-->
+		<AddTripComp client:only="svelte" trip={trip} isEdit={true} />
+	</div>
+</PageLayout>

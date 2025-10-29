@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { CalendarDate } from "@internationalized/date";
+	import type { Location, TripWithLocation } from "@types";
+	import { CalendarDate, parseDate } from "@internationalized/date";
 	import { fade } from 'svelte/transition';
 	import DatePicker from "@components/interactive/Calendar/DatePicker.svelte";
 	import AddLocation from "@components/interactive/Trip/AddLocation.svelte";
 	import { actions } from "astro:actions";
-	import { locationService } from "@client-libs/store/store.svelte";
 	import Rating from "../Rating/Rating.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 	import ArrowLeft from "phosphor-svelte/lib/ArrowLeft";
@@ -13,21 +13,35 @@
 	import { AlertDialog } from "bits-ui";
 	import Trash from "phosphor-svelte/lib/Trash";
 
+	interface Props {
+		trip?: TripWithLocation;
+		isEdit?: boolean;
+	}
+
+	let { trip, isEdit = false }: Props = $props();
 	let isAddLocationOpen = $state(false);
-	let selectedDate = $state<CalendarDate | undefined>(undefined);
-	let tripNotes = $state("");
-	let rating = $state(0);
-	let startTime = $state<string | undefined>(undefined);
-	let endTime = $state<string | undefined>(undefined);
+	let selectedDate = $state<CalendarDate | undefined>(
+		trip?.tripDate ? parseDate(trip.tripDate) : undefined
+	);
+	let tripNotes = $state(trip?.notes ?? "");
+	let rating = $state(trip?.rating ?? 0);
+	let startTime = $state<string | undefined>(trip?.startTime);
+	let endTime = $state<string | undefined>(trip?.endTime);
 	let isSubmitting = $state(false);
 	let submitError = $state("");
 	let submitSuccess = $state(false);
-	let selectedLocation = $derived(locationService.location ?? { latitude: 20, longitude: 20 });
+
+	const DEFAULT_LOCATION = { carDifficulty: 0, walkDifficulty: 0, rating: 0, };
+	let selectedLocation = $state<Partial<Location>>(trip?.location ?? DEFAULT_LOCATION);
+	function resetLocation() {
+		selectedLocation = DEFAULT_LOCATION;
+	}
+	let isLocationInValid = $derived(!selectedLocation?.latitude || !selectedLocation.longitude);
 
 	// Handle saving location when user clicks Continue in dialog
 	async function handleSaveLocation() {
 		// Validate location data
-		if (!selectedLocation.latitude || !selectedLocation.longitude) {
+		if (isLocationInValid) {
 			submitError = "Please enter valid location coordinates";
 			return;
 		}
@@ -42,8 +56,7 @@
 		submitError = "";
 		submitSuccess = false;
 
-		// Validate required fields
-		if (!selectedLocation.latitude || !selectedLocation.longitude) {
+		if (isLocationInValid) {
 			submitError = "Please select a location for your trip";
 			return;
 		}
@@ -59,8 +72,8 @@
 			const { data, error } = await actions.trip.createTrip({
 				location: {
 					name: selectedLocation.name,
-					latitude: selectedLocation.latitude,
-					longitude: selectedLocation.longitude,
+					latitude: selectedLocation.latitude!,
+					longitude: selectedLocation.longitude!,
 					carDifficulty: selectedLocation.carDifficulty === 0 ? undefined : selectedLocation.carDifficulty,
 					walkDifficulty: selectedLocation.walkDifficulty === 0 ? undefined : selectedLocation.walkDifficulty,
 					rating: selectedLocation.rating === 0 ? undefined : selectedLocation.rating,
@@ -82,7 +95,7 @@
 
 				// Reset form after successful submission
 				setTimeout(() => {
-					locationService.reset();
+					resetLocation();
 					selectedDate = undefined;
 					tripNotes = "";
 					rating = 0;
@@ -111,7 +124,7 @@
 		</button>
 	</div>
 
-	<h2>Create Fishing Trip</h2>
+	<h2>{isEdit ? 'Edit Fishing Trip' : 'Create Fishing Trip'}</h2>
 
 	<div class="trip-form">
 		<!-- Date Selection -->
@@ -124,11 +137,11 @@
 			<AddTime bind:startTime bind:endTime />
 		</section>
 
-		{#if !locationService.isSet || isAddLocationOpen}
+		{#if isLocationInValid || isAddLocationOpen}
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2">
 					<h1>Select Previous Location</h1>
-					<SelectFromLocations />
+					<SelectFromLocations bind:selectedLocation={selectedLocation} />
 				</div>
 
 				<div class="mt-6 mx-auto">
@@ -156,7 +169,7 @@
 								</AlertDialog.Title>
 							</div>
 							<div class="flex-1 overflow-y-auto overflow-x-hidden px-7 pb-4">
-								<AddLocation />
+								<AddLocation bind:selectedLocation={selectedLocation} />
 							</div>
 							<div class="flex w-full items-center justify-center gap-2 px-7 pb-7 pt-4 border-t">
 								<AlertDialog.Cancel
@@ -184,7 +197,7 @@
 			<section class="flex flex-col gap-8 sm:flex-row">
 				<div class="flex flex-col gap-2 max-w-full border border-border-input rounded-card-sm p-4 pr-8 relative text-wrap overflow-hidden whitespace-nowrap text-ellipsis">
 					{selectedLocation.name || `Location at ${selectedLocation.latitude!.toFixed(4)}, ${selectedLocation.longitude!.toFixed(4)}`}
-					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={() => locationService.reset()}>
+					<button class="text-lg absolute right-0 top-0 cursor-pointer p-2" onclick={resetLocation}>
 						<Trash />
 					</button>
 				</div>
@@ -216,7 +229,7 @@
 		<!-- Success Message -->
 		{#if submitSuccess}
 			<div class="message success-message">
-				Fishing trip created successfully!
+				Fishing trip {`${isEdit ? 'edited' : 'created'}`} successfully!
 			</div>
 		{/if}
 

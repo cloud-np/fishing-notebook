@@ -5,10 +5,11 @@
 	import CaretUpDown from "phosphor-svelte/lib/CaretUpDown";
 	import CaretDoubleUp from "phosphor-svelte/lib/CaretDoubleUp";
 	import CaretDoubleDown from "phosphor-svelte/lib/CaretDoubleDown";
-	import { locationService } from "@client-libs/store/store.svelte";
 	import { onMount } from "svelte";
 	import { actions } from "astro:actions";
 	import type { Location } from "@types";
+
+	let { selectedLocation = $bindable<Location | undefined>(undefined) } = $props();
 
 	let locations = $state<Location[]>([]);
 	let searchValue = $state("");
@@ -41,11 +42,11 @@
 	// Update the bindable location when value changes
 	function handleSelectedChange(selected: string | undefined) {
 		if (selected) {
-			const selectedLocation = locations.find(
+			const foundLocation = locations.find(
 				(loc) => (loc.name || `${loc.latitude},${loc.longitude}`) === selected
 			);
-			if (selectedLocation) {
-				locationService.set({ ...selectedLocation });
+			if (foundLocation) {
+				selectedLocation = foundLocation;
 			}
 		}
 	}

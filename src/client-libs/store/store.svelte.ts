@@ -2,27 +2,6 @@ import type { Location, Trip, WeatherUniqKey, HourlyWeather } from "@types";
 import { actions } from "astro:actions";
 import { isBusy, updateStore } from "./decorators";
 
-class LocationService {
-	location = $state<Partial<Location>>({
-		carDifficulty: 0,
-		walkDifficulty: 0,
-		rating: 0,
-	});
-	isSet = $derived(!!this.location?.latitude && !!this.location.longitude);
-
-	reset() {
-		this.location = {
-			carDifficulty: 0,
-			walkDifficulty: 0,
-			rating: 0,
-		};
-	}
-
-	set(newLocation: Partial<Location>) {
-		this.location = { ...newLocation };
-	}
-}
-
 class TripService {
 	trip = $state<Trip | undefined>(undefined);
 
@@ -90,6 +69,5 @@ class WeatherService {
 	}
 }
 
-export const locationService = new LocationService();
 export const tripService = new TripService();
 export const weatherService = new WeatherService();

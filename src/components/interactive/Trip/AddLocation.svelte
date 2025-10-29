@@ -4,15 +4,17 @@
 	import { Popover } from "bits-ui";
 	import { userValueToPosition } from "@utils/helpers";
 	import Rating from "@components/interactive/Rating/Rating.svelte";
-	import { locationService } from "@client-libs/store/store.svelte";
 	import MapPin from "phosphor-svelte/lib/MapPin";
+	import type { Location } from "@types";
+
+	let { selectedLocation = $bindable<Partial<Location>>() } = $props();
 
 	// Local state
 	let mapsUrl = $state("");
 	let isLoadingCoordinates = $state(false);
 	let urlError = $state("");
 	let isMapOpen = $state(false);
-	const DEFAULT_LOCATION = {
+	const DEFAULT_MAP_LOCATION = {
 		latitude: 37.971498,
 		longitude: 23.726647
 	}
@@ -37,8 +39,8 @@
 			}
 
 			if (data?.coordinates) {
-				locationService.location.latitude = data.coordinates.latitude;
-				locationService.location.longitude = data.coordinates.longitude;
+				selectedLocation.latitude = data.coordinates.latitude;
+				selectedLocation.longitude = data.coordinates.longitude;
 				urlError = "";
 			}
 		} catch (error) {
@@ -51,8 +53,8 @@
 
 	// Handle map click to update coordinates
 	function handleMapClick(lat: number, lng: number) {
-		locationService.location.latitude = lat;
-		locationService.location.longitude = lng;
+		selectedLocation.latitude = lat;
+		selectedLocation.longitude = lng;
 	}
 
 	function handlePaste(event: ClipboardEvent) {
@@ -62,8 +64,8 @@
 		// Kinda hacky, we wait for the input from the user to be processed
 		// then we set the values in an async manner.
 		setTimeout(() => {
-			locationService.location.latitude = parsedValue[0];
-			locationService.location.longitude = parsedValue[1];
+			selectedLocation.latitude = parsedValue[0];
+			selectedLocation.longitude = parsedValue[1];
 		}, 0);
 	}
 
@@ -76,7 +78,7 @@
 		<input
 			id="maps-url"
 			type="text"
-			bind:value={locationService.location.name}
+			bind:value={selectedLocation.name}
 			placeholder="Location Name"
 			class={inputClasses}
 		/>
@@ -120,7 +122,7 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={locationService.location.latitude}
+							bind:value={selectedLocation.latitude}
 							onpaste={handlePaste}
 							class={inputClasses}
 							placeholder="e.g., 37.977217"
@@ -132,7 +134,7 @@
 						<input
 							type="number"
 							step="any"
-							bind:value={locationService.location.longitude}
+							bind:value={selectedLocation.longitude}
 							class={inputClasses}
 							placeholder="e.g., 23.730278"
 						/>
@@ -152,13 +154,13 @@
 			>
 				<div class="w-full h-full">
 					<Map
-						location={{ latitude: locationService.location.latitude || DEFAULT_LOCATION.latitude, longitude: locationService.location.longitude || DEFAULT_LOCATION.longitude }}
+						location={{ latitude: selectedLocation.latitude || DEFAULT_MAP_LOCATION.latitude, longitude: selectedLocation.longitude || DEFAULT_MAP_LOCATION.longitude }}
 						zoom={9}
 						markerMarkup={`
 							<div class="marker">
 								<p><strong>Fishing Spot</strong></p>
-								<p>Lat: ${(locationService.location.latitude || DEFAULT_LOCATION.latitude).toFixed(6)}</p>
-								<p>Lng: ${(locationService.location.longitude || DEFAULT_LOCATION.longitude).toFixed(6)}</p>
+								<p>Lat: ${(selectedLocation.latitude || DEFAULT_MAP_LOCATION.latitude).toFixed(6)}</p>
+								<p>Lng: ${(selectedLocation.longitude || DEFAULT_MAP_LOCATION.longitude).toFixed(6)}</p>
 							</div>
 						`}
 						onMarkerPlace={handleMapClick}
@@ -171,15 +173,15 @@
 	<div class="flex flex-col gap-4 justify-center items-center">
 		<div class="flex flex-col justify-center items-center">
 			<h3>Car Difficulty</h3>
-			<Rating bind:value={locationService.location.carDifficulty} />
+			<Rating bind:value={selectedLocation.carDifficulty} />
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Walk Difficulty</h3>
-			<Rating bind:value={locationService.location.walkDifficulty} />
+			<Rating bind:value={selectedLocation.walkDifficulty} />
 		</div>
 		<div class="flex flex-col justify-center items-center">
 			<h3>Location Overall Rating</h3>
-			<Rating bind:value={locationService.location.rating} />
+			<Rating bind:value={selectedLocation.rating} />
 		</div>
 	</div>
 </section>
