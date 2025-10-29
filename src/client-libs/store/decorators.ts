@@ -1,11 +1,9 @@
 // Method decorator to manage isBusy state
 // Manages its own internal busy state, no class property required
-// If argumentNames are provided, caches promises based on the values of those arguments
-// If no argumentNames are provided, uses simple busy state (previous behavior)
-export function isBusy<TThis extends WeakKey, TArgs extends any[], TReturn>(rateLimit?: number) {
+export function isBusy<TThis extends WeakKey, TArgs extends any[], TReturn>() {
 	return function (
 		originalMethod: (this: TThis, ...args: TArgs) => TReturn,
-		context: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => TReturn>
+		_context: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => TReturn>
 	) {
 		// Map to store pending promises by cache key
 		const pendingPromises = new Map<string, Promise<TReturn>>();

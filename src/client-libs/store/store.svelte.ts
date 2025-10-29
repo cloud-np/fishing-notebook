@@ -30,7 +30,7 @@ class TripService {
 		this.trip = newTrip;
 	}
 
-	@isBusy
+	@isBusy()
 	@updateStore("trip")
 	async createTrip(trip: Trip & { location: Location }) {
 		const { data, error } = await actions.trip.createTrip({
@@ -64,7 +64,7 @@ class WeatherService {
 	hourlyWeather = $state<HourlyWeather[] | undefined>(undefined);
 	hourlyWeatherByKey = $state<Record<WeatherUniqKey, HourlyWeather[] | undefined>>({});
 
-	@isBusy(10)
+	@isBusy()
 	async getWeatherByDate(longitude: number, latitude: number, date: string): Promise<HourlyWeather[]> {
 		const key = `${longitude}-${latitude}-${date}`;
 		if (this.hourlyWeatherByKey[key]) {
