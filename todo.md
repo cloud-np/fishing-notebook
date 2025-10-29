@@ -7,8 +7,14 @@
 * Make the weather data responsive they are overflowing the card.
 * When showing the weather specific hours should be shown first.
 * Add proper responses codes for constrains: Failed to validate: [ { "code": "too_big", "maximum": 200, "type": "string", "inclusive": true, "exact": false, "message": "String must contain at most 200 character(s)", "path": [ "location", "name" ] } ]
-* FE "rate limiter", implement isLoading per action/comp.
-* BUG: When a user clicks a trip and then changes to another we do not update the weather data.
+* Add a queryParam in the URL to navigate to a specific trip. For example:
+    - `dashboard/trip/123`
+    - `dashboard/trip/123?date=2023-01-01`
+	This should be done from astro and should open the trip details as well.
+	Or we could do
+    - `/trip/123`
+    - `/trip?date=2023-01-01`
+    And this will show a trip page with everything about the trip.
 
 # BE
 * Use the marine forecast API to get data regarding the weather for each trip.

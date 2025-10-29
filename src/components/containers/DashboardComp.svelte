@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Calendar from "@components/interactive/Calendar/Calendar.svelte";
-	import TripDetails from "@components/interactive/Trip/TripDetails.svelte";
 	import { tripService } from "@client-libs/store/store.svelte";
 	import Plus from "phosphor-svelte/lib/Plus";
 
@@ -20,7 +19,9 @@
 
 		<!-- TODO: When we open TripDetails then try to fetch weather data -->
 		{#if selectedTrip}
-			<TripDetails trip={selectedTrip} />
+			{#await import("@components/interactive/Trip/TripDetails.svelte") then TripDetails}
+				<TripDetails.default trip={selectedTrip} />
+			{/await}
 		{/if}
 	</div>
 </div>
