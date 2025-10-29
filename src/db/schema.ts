@@ -124,7 +124,11 @@ export const fishingTrips = sqliteTable(
 			.notNull()
 			.default(sql`(unixepoch())`),
 	},
-	table => [index("user_date_idx").on(table.userId, table.tripDate)]
+	table => [
+		index("user_date_idx").on(table.userId, table.tripDate),
+		// For now we have the contrain one trip one day
+		uniqueIndex("user_trip_date_idx").on(table.userId, table.tripDate),
+	]
 );
 
 export const fishSpecies = sqliteTable("fish_species", {

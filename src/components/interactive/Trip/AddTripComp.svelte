@@ -70,6 +70,7 @@
 
 		try {
 			const { data, error } = await actions.trip.createTrip({
+				tripId: trip?.id, // Pass tripId when editing to allow date changes
 				location: {
 					name: selectedLocation.name,
 					latitude: selectedLocation.latitude!,

@@ -1,6 +1,6 @@
 import { db } from "../index";
 import { fishingTrips, locations, dailyWeather } from "../schema";
-import { eq, and, desc, gte, lte, type InferInsertModel } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql, type InferInsertModel } from "drizzle-orm";
 
 /**
  * Insert a new fishing trip
@@ -74,4 +74,66 @@ export async function getTripCount(userId: string): Promise<number> {
 		.from(fishingTrips)
 		.where(eq(fishingTrips.userId, userId as any));
 	return result.length;
+}
+
+/**
+ * Create or update a fishing trip
+ * If tripId is provided, updates that specific trip (allowing date changes)
+ * Otherwise, uses userId + tripDate as the unique constraint for upsert
+ */
+export async function createOrUpdateTrip(trip: {
+	tripId?: number;
+	userId: string;
+	locationId: number;
+	tripDate: string;
+	startTime?: string;
+	endTime?: string;
+	title?: string;
+	notes?: string;
+	rating?: number;
+}) {
+	// If tripId is provided, update by ID (allows date changes)
+	if (trip.tripId) {
+		return await db
+			.update(fishingTrips)
+			.set({
+				locationId: trip.locationId,
+				tripDate: trip.tripDate,
+				startTime: trip.startTime ?? undefined,
+				endTime: trip.endTime ?? undefined,
+				title: trip.title ?? undefined,
+				notes: trip.notes ?? undefined,
+				rating: trip.rating ?? undefined,
+				updatedAt: sql`(unixepoch())`,
+			})
+			.where(and(eq(fishingTrips.id, trip.tripId), eq(fishingTrips.userId, trip.userId as any)))
+			.returning();
+	}
+
+	// Otherwise, use upsert with userId + tripDate
+	return await db
+		.insert(fishingTrips)
+		.values({
+			userId: trip.userId as any,
+			locationId: trip.locationId,
+			tripDate: trip.tripDate,
+			startTime: trip.startTime ?? undefined,
+			endTime: trip.endTime ?? undefined,
+			title: trip.title ?? undefined,
+			notes: trip.notes ?? undefined,
+			rating: trip.rating ?? undefined,
+		})
+		.onConflictDoUpdate({
+			target: [fishingTrips.userId, fishingTrips.tripDate],
+			set: {
+				locationId: trip.locationId,
+				startTime: trip.startTime ?? sql`${fishingTrips.startTime}`,
+				endTime: trip.endTime ?? sql`${fishingTrips.endTime}`,
+				title: trip.title ?? sql`${fishingTrips.title}`,
+				notes: trip.notes ?? sql`${fishingTrips.notes}`,
+				rating: trip.rating ?? sql`${fishingTrips.rating}`,
+				updatedAt: sql`(unixepoch())`,
+			},
+		})
+		.returning();
 }

@@ -5,6 +5,7 @@ import { fishingTrips } from "@db/schema";
 import { createAuthorizedHandler } from "src/actions/auth";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { createOrUpdateLocation } from "@db/locations/locations";
+import { createOrUpdateTrip } from "@db/fishing-trip/fishingTrip";
 import type { Trip, TripsByDate } from "src/types/Trip.model";
 import type { Location } from "src/types/Location.model";
 import { getWeatherService } from "@libs/services";
@@ -15,33 +16,21 @@ export const trip = {
 		input: createTripSchema,
 		handler: createAuthorizedHandler(async (input, _context, session) => {
 			try {
-				// Use context.callAction to create or update the location
-				const [location] = await createOrUpdateLocation(
-					{
-						name: input.location.name,
-						latitude: input.location.latitude,
-						longitude: input.location.longitude,
-						carDifficulty: input.location.carDifficulty,
-						walkDifficulty: input.location.walkDifficulty,
-						rating: input.location.rating,
-					},
-					session.user.id
-				);
+				// Create or update the location
+				const [location] = await createOrUpdateLocation({ ...input.location }, session.user.id);
 
-				// Create the fishing trip
-				const [newTrip] = await db
-					.insert(fishingTrips)
-					.values({
-						userId: session.user.id,
-						locationId: location.id,
-						tripDate: input.tripDate,
-						startTime: input.startTime || undefined,
-						endTime: input.endTime || undefined,
-						title: input.title || undefined,
-						notes: input.notes || undefined,
-						rating: input.rating || undefined,
-					})
-					.returning();
+				// Create or update the trip (pass tripId if provided for editing)
+				const [trip] = await createOrUpdateTrip({
+					tripId: input.tripId,
+					userId: session.user.id,
+					locationId: location.id,
+					tripDate: input.tripDate,
+					startTime: input.startTime,
+					endTime: input.endTime,
+					title: input.title,
+					notes: input.notes,
+					rating: input.rating,
+				});
 
 				// Fetch and save hourly weather data
 				await getWeatherService().fetchAndSaveHourlyWeather(
@@ -52,18 +41,18 @@ export const trip = {
 
 				return {
 					success: true,
-					message: "Fishing trip created successfully!",
-					trip: newTrip,
+					message: "Fishing trip saved successfully!",
+					trip,
 				};
 			} catch (error) {
 				if (error instanceof ActionError) {
 					throw error;
 				}
 
-				console.error("Error creating trip:", error);
+				console.error("Error saving trip:", error);
 				throw new ActionError({
 					code: "INTERNAL_SERVER_ERROR",
-					message: "Failed to create fishing trip",
+					message: "Failed to save fishing trip",
 				});
 			}
 		}),
@@ -80,6 +69,7 @@ export const trip = {
 				});
 
 				const trips: Trip[] = dbTrips.map(dbTrip => ({
+					id: dbTrip.id,
 					tripDate: dbTrip.tripDate,
 					startTime: dbTrip.startTime ?? undefined,
 					endTime: dbTrip.endTime ?? undefined,
@@ -140,6 +130,7 @@ export const trip = {
 
 				const trips = limitedTrips.reduce((acc, dbTrip) => {
 					acc[dbTrip.tripDate] = {
+						id: dbTrip.id,
 						tripDate: dbTrip.tripDate,
 						startTime: dbTrip.startTime ?? undefined,
 						endTime: dbTrip.endTime ?? undefined,

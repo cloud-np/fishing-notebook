@@ -23,3 +23,4 @@
 
 # Project wide
 * Lets re-arrange especially the FE components into better folders.
+* We have a contrain of one trip per day. Some day lets add this feature of multiple trips per day.

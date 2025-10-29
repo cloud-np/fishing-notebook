@@ -5,6 +5,7 @@ export interface TripWithLocation extends Trip {
 }
 
 export interface Trip {
+	id?: number;
 	tripDate: string;
 	startTime?: string;
 	endTime?: string;

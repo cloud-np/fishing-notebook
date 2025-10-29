@@ -1,6 +1,7 @@
 import { z } from "astro:schema";
 
 export const createTripSchema = z.object({
+	tripId: z.number().int().positive().optional(), // For editing existing trips
 	location: z.object({
 		name: z.string().max(200).optional(),
 		latitude: z.number().min(-90).max(90, "Latitude must be between -90 and 90"),
