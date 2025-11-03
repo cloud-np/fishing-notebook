@@ -110,7 +110,7 @@ export async function createOrUpdateTrip(trip: {
 			.returning();
 	}
 
-	// Otherwise, use upsert with userId + tripDate
+	// Otherwise, insert a new trip
 	return await db
 		.insert(fishingTrips)
 		.values({
@@ -127,11 +127,11 @@ export async function createOrUpdateTrip(trip: {
 			target: [fishingTrips.userId, fishingTrips.tripDate],
 			set: {
 				locationId: trip.locationId,
-				startTime: trip.startTime ?? sql`${fishingTrips.startTime}`,
-				endTime: trip.endTime ?? sql`${fishingTrips.endTime}`,
-				title: trip.title ?? sql`${fishingTrips.title}`,
-				notes: trip.notes ?? sql`${fishingTrips.notes}`,
-				rating: trip.rating ?? sql`${fishingTrips.rating}`,
+				startTime: trip.startTime ?? undefined,
+				endTime: trip.endTime ?? undefined,
+				title: trip.title ?? undefined,
+				notes: trip.notes ?? undefined,
+				rating: trip.rating ?? undefined,
 				updatedAt: sql`(unixepoch())`,
 			},
 		})
