@@ -74,7 +74,7 @@ RUN echo '#!/bin/sh' > /entrypoint.sh && \
 	echo '' >> /entrypoint.sh && \
 	echo '# Run database migrations' >> /entrypoint.sh && \
 	echo 'echo "Running database migrations..."' >> /entrypoint.sh && \
-	echo 'node --import tsx/esm /app/scripts/migrate-db.ts || echo "Warning: Migration failed or no migrations to run"' >> /entrypoint.sh && \
+	echo 'cd /app && NODE_ENV=production node --import tsx /app/scripts/migrate-db.ts || echo "Warning: Migration failed or no migrations to run"' >> /entrypoint.sh && \
 	echo '' >> /entrypoint.sh && \
 	echo 'exec "$@"' >> /entrypoint.sh && \
 	chmod +x /entrypoint.sh

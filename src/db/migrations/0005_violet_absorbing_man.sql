@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `user_trip_date_idx` ON `fishing_trips` (`user_id`,`trip_date`);
