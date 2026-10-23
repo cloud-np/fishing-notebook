@@ -1,5 +1,5 @@
 # Use Node.js 24 Alpine for smaller image size
-FROM node:24-alpine AS base
+FROM node:24.22.1-alpine AS base
 # Install pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
